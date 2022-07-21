@@ -1,12 +1,12 @@
 public class Cube {
 	
-	long down = 0L;
 	long up = 72340172838076673L;
-	long left = 144680345676153346L;
+	long down = 0L;
 	long right = 217020518514230019L;
+	long left = 144680345676153346L;
 	long front = 289360691352306692L;
 	long back = 361700864190383365L;
-
+	
 	public Long getByteGivenPositionInLong(Long l, int i) {
 		return ((l<<(7-i)*8)>>(i*8+(7-i)*8))<<i*8;
 	}
@@ -181,20 +181,22 @@ public class Cube {
 		Long newRight = right;
 		Long newBack = back;
 		
+		int[] x = new int[] {4, 5, 6};
+		
 		if (prime) {
 			down = Long.rotateRight(down, 16);
 			
-			newLeft = changes(newLeft, front, new int[] {4, 5, 6}, new int[] {4, 5, 6});
-			newFront = changes(newFront, right, new int[] {4, 5, 6}, new int[] {4, 5, 6});
-			newRight = changes(newRight, back, new int[] {4, 5, 6}, new int[] {4, 5, 6});
-			newBack = changes(newBack, left, new int[] {4, 5, 6}, new int[] {4, 5, 6});
+			newLeft = changes(newLeft, front, x, x);
+			newFront = changes(newFront, right, x, x);
+			newRight = changes(newRight, back, x, x);
+			newBack = changes(newBack, left, x, x);
 		} else {
 			down = Long.rotateLeft(down, 16);
 			
-			newLeft = changes(newLeft, back, new int[] {4, 5, 6}, new int[] {4, 5, 6});
-			newFront = changes(newFront, left, new int[] {4, 5, 6}, new int[] {4, 5, 6});
-			newRight = changes(newRight, front, new int[] {4, 5, 6}, new int[] {4, 5, 6});
-			newBack = changes(newBack, right, new int[] {4, 5, 6}, new int[] {4, 5, 6});
+			newLeft = changes(newLeft, back, x, x);
+			newFront = changes(newFront, left, x, x);
+			newRight = changes(newRight, front, x, x);
+			newBack = changes(newBack, right, x, x);
 		}
 		
 		left = newLeft;
