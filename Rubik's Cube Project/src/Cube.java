@@ -1,3 +1,4 @@
+
 public class Cube {
 	
 	long up = 72340172838076673L;
@@ -7,13 +8,204 @@ public class Cube {
 	long front = 289360691352306692L;
 	long back = 361700864190383365L;
 	
+	Long[] cubeNums = {
+			down,
+			up,
+			left,
+			right,
+			front,
+			back
+		};
+
+	String[] cube = {
+			"YYYYYYYY", // down 0
+			"WWWWWWWW", // up 1
+			"OOOOOOOO", // left 2
+			"RRRRRRRR", // right 3
+			"GGGGGGGG", // front 4
+			"BBBBBBBB"  // back 5
+		};
+	
+	public void doMove(String move) {
+		switch (move) {
+		case "R":
+			R(false);
+			break;
+		case "L":
+			L(false);
+			break;
+		case "U":
+			U(false);
+			break;
+		case "D":
+			D(false);
+			break;
+		case "F":
+			F(false);
+			break;
+		case "B":
+			B(false);
+			break;
+		case "R'":
+			R(true);
+			break;
+		case "L'":
+			L(true);
+			break;
+		case "U'":
+			U(true);
+			break;
+		case "D'":
+			D(true);
+			break;
+		case "F'":
+			F(true);
+			break;
+		case "B'":
+			B(true);
+			break;
+		case "R2":
+			R(true);
+			R(true);
+			break;
+		case "L2":
+			L(true);
+			L(true);
+			break;
+		case "U2":
+			U(true);
+			U(true);
+			break;
+		case "D2":
+			D(true);
+			D(true);
+			break;
+		case "F2":
+			F(true);
+			F(true);
+			break;
+		case "B2":
+			B(true);
+			B(true);
+			break;
+		}
+	}
+	
+	public Cube doMoveReturn(String move) {
+		Cube c = new Cube();
+		c.up = this.up;
+		c.down = this.down;
+		c.right = this.right;
+		c.left = this.left;
+		c.front = this.front;
+		c.back = this.back;
+		switch (move) {
+		case "R":
+			c.R(false);
+			break;
+		case "L":
+			c.L(false);
+			break;
+		case "U":
+			c.U(false);
+			break;
+		case "D":
+			c.D(false);
+			break;
+		case "F":
+			c.F(false);
+			break;
+		case "B":
+			c.B(false);
+			break;
+		case "R'":
+			c.R(true);
+			break;
+		case "L'":
+			c.L(true);
+			break;
+		case "U'":
+			c.U(true);
+			break;
+		case "D'":
+			c.D(true);
+			break;
+		case "F'":
+			c.F(true);
+			break;
+		case "B'":
+			c.B(true);
+			break;
+		case "R2":
+			c.R(true);
+			c.R(true);
+			break;
+		case "L2":
+			c.L(true);
+			c.L(true);
+			break;
+		case "U2":
+			c.U(true);
+			c.U(true);
+			break;
+		case "D2":
+			c.D(true);
+			c.D(true);
+			break;
+		case "F2":
+			c.F(true);
+			c.F(true);
+			break;
+		case "B2":
+			c.B(true);
+			c.B(true);
+			break;
+		}
+		return c;
+	}
+	
+	public void printFace(Long face) {
+		String out = bitboardToFace(face);
+		System.out.println(out.charAt(7) + " " + out.charAt(6) + " " + out.charAt(5));
+		System.out.println(out.charAt(0) + "   " + out.charAt(4));
+		System.out.println(out.charAt(1) + " " + out.charAt(2) + " " + out.charAt(3));
+	}
+
+	public void printBytes(Long face) {
+		for (int i = 0; i < 8; i++) {
+			System.out.println(getByteGivenPositionInLong(face, i)>>i*8);
+		}
+	}
+
+	public String bitboardToFace(Long bitboard) {
+		String face = "";
+		for (int i = 7; i > -1; i--) {
+			if (((bitboard>>i*8)&1)==1) {
+				if (((bitboard>>i*8)&11)==3)
+					face += "R";
+				else if (((bitboard>>i*8)&101)==5)
+					face += "B";
+				else
+					face += "W";
+			} else {
+				if (((bitboard>>i*8)&10)==2)
+					face += "O";
+				else if (((bitboard>>i*8)&100)==4)
+					face += "G";
+				else
+					face += "Y";
+			}
+		}
+		return face;
+	}
+	
 	public Long getByteGivenPositionInLong(Long l, int i) {
 		return ((l<<(7-i)*8)>>(i*8+(7-i)*8))<<i*8;
 	}
 	
 	public Long changeFirstByteIntoSecondByte(Long face1, Long face2, int i, int j) {
-		Long face1byte1 = (Long) getByteGivenPositionInLong(face1, i);
-		Long face2byte2 = (Long) getByteGivenPositionInLong(face2, j);
+		Long face1byte1 = getByteGivenPositionInLong(face1, i);
+		Long face2byte2 = getByteGivenPositionInLong(face2, j);
 		
 		face1 -= face1byte1;
 

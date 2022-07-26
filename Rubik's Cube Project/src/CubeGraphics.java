@@ -3,12 +3,11 @@ import peasy.*;
 
 public class CubeGraphics extends PApplet {
 	PeasyCam cam;
-	int dim = 3;
-	Cubie[] cube = new Cubie[dim*dim*dim];
+	Cubie[] cube = new Cubie[27];
 	
 	int shift = 1;
 	boolean tab = false;
-	
+
 	Move m = null;
 	
 	public static void main(String[] args) {
@@ -197,7 +196,6 @@ public class CubeGraphics extends PApplet {
 			} else {
 				back = new int[] {0, 0, 0};
 			}
-			
 			
 			faces[0] = new Face(new PVector(0, 0, -1), back);
 			faces[1] = new Face(new PVector(0, 0, 1), front);
