@@ -49,7 +49,7 @@ public class temp {
 			System.out.println();
 		}
 	}
-		
+
 	private static byte count(byte[][] array, byte[] item) {
 		byte count = 0;
 		for (int i = 0; i < array.length; i++) {

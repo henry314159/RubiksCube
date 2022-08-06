@@ -113,7 +113,7 @@ public class Goal {
 		};
 		
 	}
-		
+
 	public Boolean isSatisfied(Cube cube) {
 		switch (state) {
 		case 1:

@@ -1,14 +1,22 @@
 import processing.core.*;
+
+import java.io.IOException;
+import java.util.LinkedList;
 import peasy.*;
 
 public class CubeGraphics extends PApplet {
 	PeasyCam cam;
 	Cubie[] cube = new Cubie[27];
 	
+	boolean solving = false;
+	
 	int shift = 1;
 	boolean tab = false;
 
 	Move m = null;
+	
+	LinkedList<String> movesDone = new LinkedList<String>();
+	LinkedList<String> movesToDo = new LinkedList<String>();
 	
 	public static void main(String[] args) {
 		PApplet.main("CubeGraphics");
@@ -73,6 +81,124 @@ public class CubeGraphics extends PApplet {
 	public void draw() {
 		if (m != null)
 			m.update();
+		if (solving && !m.animating) {
+			if (!movesToDo.isEmpty()) {
+				String move = movesToDo.removeFirst();
+				LinkedList<String> temp = new LinkedList<String>();
+				
+				switch (move) {
+				case "R":
+					shift = 1;
+					m = new Move(1, 0, 0, 1);
+					m.start();
+					break;
+				case "L":
+					shift = 1;
+					m = new Move(-1, 0, 0, -1);
+					m.start();
+					break;
+				case "F":
+					shift = 1;
+					m = new Move(0, 0, 1, 1);
+					m.start();
+					break;
+				case "B":
+					shift = 1;
+					m = new Move(0, 0, -1, -1);
+					m.start();
+					break;
+				case "U":
+					shift = 1;
+					m = new Move(0, -1, 0, 1);
+					m.start();
+					break;
+				case "D":
+					shift = 1;
+					m = new Move(0, 1, 0, -1);
+					m.start();
+					break;
+				case "R'":
+					shift = -1;
+					m = new Move(1, 0, 0, 1);
+					m.start();
+					break;
+				case "L'":
+					shift = -1;
+					m = new Move(-1, 0, 0, -1);
+					m.start();
+					break;
+				case "F'":
+					shift = -1;
+					m = new Move(0, 0, 1, 1);
+					m.start();
+					break;
+				case "B'":
+					shift = -1;
+					m = new Move(0, 0, -1, -1);
+					m.start();
+					break;
+				case "U'":
+					shift = -1;
+					m = new Move(0, -1, 0, 1);
+					m.start();
+					break;
+				case "D'":
+					shift = -1;
+					m = new Move(0, 1, 0, -1);
+					m.start();
+					break;
+				case "R2":
+					shift = 1;
+					m = new Move(1, 0, 0, 1);
+					m.start();
+					temp.add("R");
+					temp.addAll(movesToDo);
+					movesToDo = temp;
+					break;
+				case "L2":
+					shift = 1;
+					m = new Move(-1, 0, 0, -1);
+					m.start();
+					temp.add("L");
+					temp.addAll(movesToDo);
+					movesToDo = temp;
+					break;
+				case "F2":
+					shift = 1;
+					m = new Move(0, 0, 1, 1);
+					m.start();
+					temp.add("F");
+					temp.addAll(movesToDo);
+					movesToDo = temp;
+					break;
+				case "B2":
+					shift = 1;
+					m = new Move(0, 0, -1, -1);
+					m.start();
+					temp.add("B");
+					temp.addAll(movesToDo);
+					movesToDo = temp;
+					break;
+				case "U2":
+					shift = 1;
+					m = new Move(0, -1, 0, 1);
+					m.start();
+					temp.add("U");
+					temp.addAll(movesToDo);
+					movesToDo = temp;
+					break;
+				case "D2":
+					shift = 1;
+					m = new Move(0, 1, 0, -1);
+					m.start();
+					temp.add("D");
+					temp.addAll(movesToDo);
+					movesToDo = temp;
+					break;
+				}
+			} else
+				solving = false;
+		}
 		
 		background(200);
 		scale(60);
@@ -99,53 +225,105 @@ public class CubeGraphics extends PApplet {
 	}
 	
 	public void keyPressed() {
-		if (m == null || !m.animating) {
-			switch (key) {
-			case ENTER:
-				shift *= -1;
-				break;
-			case TAB:
-				if (tab)
+		if ((m == null || !m.animating) && !solving) {
+			if (key == CODED) {
+				if (keyCode == SHIFT)
+					shift *= -1;
+			} else {
+				String moveString = "";
+				
+				switch (key) {
+				case ' ':
+					Cube c = new Cube();
+					CubeIndexModel ci = new CubeIndexModel();
+					temp3 tmp = new temp3();
+					for (String move : movesDone) {
+						c.doMove(move);
+						ci.doMove(move);
+						tmp.doMove(move);
+					}
 					tab = false;
-				else
-					tab = true;
-				break;
-			case 'f':
-				m = new Move(0, 0, 1, 1);
-				m.start();
-				break;
-			case 'b':
-				m = new Move(0, 0, -1, -1);
-				m.start();
-				break;
-			case 'u':
-				m = new Move(0, -1, 0, 1);
-				m.start();
-				break;
-			case 'd':
-				m = new Move(0, 1, 0, -1);
-				m.start();
-				break;
-			case 'l':
-				m = new Move(-1, 0, 0, -1);
-				m.start();
-				break;
-			case 'r':
-				m = new Move(1, 0, 0, 1);
-				m.start();
-				break;
-			case 'm':
-				m = new Move(2, 0, 0, -1);
-				m.start();
-				break;
-			case 's':
-				m = new Move(0, 0, 2, 1);
-				m.start();
-				break;
-			case 'e':
-				m = new Move(0, 2, 0, -1);
-				m.start();
-				break;
+					Thistlethwaite t = new Thistlethwaite(c, ci, tmp);
+					try {
+						movesToDo = t.solve();
+					} catch (ClassNotFoundException | IOException e) {
+						e.printStackTrace();
+					}
+					movesDone = new LinkedList<String>();
+					solving = true;
+					break;
+				case TAB:
+					tab ^= true;
+					break;
+				case 'f':
+					m = new Move(0, 0, 1, 1);
+					m.start();
+					if (tab)
+						moveString += "f";
+					else
+						moveString += "F";
+					break;
+				case 'b':
+					m = new Move(0, 0, -1, -1);
+					m.start();
+					if (tab)
+						moveString += "b";
+					else
+						moveString += "B";
+					break;
+				case 'u':
+					m = new Move(0, -1, 0, 1);
+					m.start();
+					if (tab)
+						moveString += "u";
+					else
+						moveString += "U";
+					break;
+				case 'd':
+					m = new Move(0, 1, 0, -1);
+					m.start();
+					if (tab)
+						moveString += "d";
+					else
+						moveString += "D";
+					break;
+				case 'l':
+					m = new Move(-1, 0, 0, -1);
+					m.start();
+					if (tab)
+						moveString += "l";
+					else
+						moveString += "L";
+					break;
+				case 'r':
+					m = new Move(1, 0, 0, 1);
+					m.start();
+					if (tab)
+						moveString += "r";
+					else
+						moveString += "R";
+					break;
+				case 'm':
+					m = new Move(2, 0, 0, -1);
+					m.start();
+					moveString += "m";
+					break;
+				case 's':
+					m = new Move(0, 0, 2, 1);
+					m.start();
+					moveString += "s";
+					break;
+				case 'e':
+					m = new Move(0, 2, 0, -1);
+					m.start();
+					moveString += "e";
+					break;
+				}
+				if (!moveString.equals("")) {
+					if (shift == -1)
+						moveString += "'";
+					movesDone.add(moveString);
+				}
 			}
 		}
 	}
