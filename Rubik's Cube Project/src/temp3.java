@@ -1,3 +1,4 @@
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -103,28 +104,26 @@ public class temp3 {
 				}
 			}
 		}
-		String[][] bruh = new String[19][];
-		for (int i = 1082546; i < 1082565; i++) {
-			bruh[i-1082546] = distances[i];
-		}
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//		String[][] bruh = new String[19][];
+//		for (int i = 1082546; i < 1082565; i++) {
+//			System.out.println(Arrays.toString(distances[i]));
+//		}
+		Gson gson = new GsonBuilder().create();
 //		
-		gson.toJson(bruh, new FileWriter("bruh.json"));
-		int index = 0;
-		for (String[] item : distances) {
-			if (item.length == 7 && item[0].equals("R2")) {
-				System.out.print(Arrays.toString(item));
-				System.out.println(index);
-			}
-			index ++;
-		}
-		temp3 c = new temp3();
-		c.R();
-		c.B();
-		c.FPrime();
-		c.BPrime();
-		System.out.println(c.getIndex());
-		System.out.println(Arrays.toString(distances[c.getIndex()]));
+		String json = gson.toJson(distances);
+		
+		FileWriter file = new FileWriter("thistlethwaiteG1-G2.json");
+		BufferedWriter buffer = new BufferedWriter(file);
+		buffer.write(json);
+		buffer.close();
+		
+//		temp3 c = new temp3();
+//		c.R();
+//		c.B();
+//		c.FPrime();
+//		c.BPrime();
+//		System.out.println(c.getIndex());
+//		System.out.println(Arrays.toString(distances[c.getIndex()]));
 
 		
 	}

@@ -1,12 +1,17 @@
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.LinkedList;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class temp2{
 	
@@ -69,28 +74,14 @@ public class temp2{
 				}
 			}
 		}
-//		try(FileOutputStream f = new FileOutputStream("thistlethwaiteG1-G2.txt");
-//			    ObjectOutput s = new ObjectOutputStream(f)) {
-//			    s.writeObject(distances);
-//			    s.close();
-//			    f.close();
-//			}
-//		String[][] distances;
-//		try(FileInputStream in = new FileInputStream("thistlethwaiteG1-G2.txt");
-//				ObjectInputStream s = new ObjectInputStream(in)) {
-//				distances = (String[][]) s.readObject();
-//				s.close();
-//				in.close();
-//		}
-		int oh = 0;
-		for (String[] s : distances) {
-			if (s != null) {
-				
-			}else {
-				oh++;
-			}
-		}
-		System.out.println(oh);
+		Gson gson = new GsonBuilder().create();
+//		
+		String json = gson.toJson(distances);
+		
+		FileWriter file = new FileWriter("thistlethwaiteG0-G1.json");
+		BufferedWriter buffer = new BufferedWriter(file);
+		buffer.write(json);
+		buffer.close();
 	}
 	
 	public final static String[] reverseAndClean(LinkedList<String> lls_) {

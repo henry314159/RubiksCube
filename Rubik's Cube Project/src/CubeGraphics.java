@@ -243,7 +243,7 @@ public class CubeGraphics extends PApplet {
 						tmp.doMove(move);
 					}
 					tab = false;
-					Thistlethwaite t = new Thistlethwaite(c, ci, tmp);
+					ThistlethwaiteTesting t = new ThistlethwaiteTesting(c, ci, tmp);
 					try {
 						movesToDo = t.solve();
 					} catch (ClassNotFoundException | IOException e) {
