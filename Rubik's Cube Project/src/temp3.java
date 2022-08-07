@@ -45,7 +45,7 @@ public class temp3 {
 	byte DB = 10;
 	byte DR = 11;
 	
-	byte[] edges = new byte[] {4, 5, 6, 7, 0, 1, 2, 3, 8, 9, 10, 11};
+	byte[] edges = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 	// 0  1  2  3  4  5  6  7  8  9  10 11
 	// UB UR UF UL FR FL BL BR DF DL DB DR
 	// 0 - oriented, 1 - flipped
@@ -92,13 +92,6 @@ public class temp3 {
 					LinkedList<String> wll = new LinkedList<String>();
 					wll.addAll(dequeued.second);
 					wll.add(move);
-//					if (code % 495 == 20) {
-//						System.out.print(wll.toString());
-//						System.out.print(w.getCornerOrientation());
-//						System.out.print(Arrays.toString(w.corners));
-//						System.out.print(w.getEdgePartialCombination());
-//						System.out.println(Arrays.toString(w.edges));
-//					}
 					queue.add(new Tuple2<temp3, LinkedList<String>>(w, wll));
 					distances[code] = reverseAndClean(wll);
 				}
@@ -109,7 +102,7 @@ public class temp3 {
 //			System.out.println(Arrays.toString(distances[i]));
 //		}
 		Gson gson = new GsonBuilder().create();
-//		
+		
 		String json = gson.toJson(distances);
 		
 		FileWriter file = new FileWriter("thistlethwaiteG1-G2.json");
@@ -118,10 +111,6 @@ public class temp3 {
 		buffer.close();
 		
 //		temp3 c = new temp3();
-//		c.R();
-//		c.B();
-//		c.FPrime();
-//		c.BPrime();
 //		System.out.println(c.getIndex());
 //		System.out.println(Arrays.toString(distances[c.getIndex()]));
 
@@ -271,18 +260,18 @@ public class temp3 {
 		byte[] interestingEdges = new byte[4];
 		int index = 0;
 		for (int i = 0; i < 12 && index < 4; i++) {
-			if (edges[i] == 0 || edges[i] == 1 || edges[i] == 2 || edges[i] == 3) {
+			if (edges[i] == 4 || edges[i] == 5 || edges[i] == 6 || edges[i] == 7) {
 				interestingEdges[index] = (byte)i;
 				index++;
 			}
 		}
 		Arrays.sort(interestingEdges);
-		int rank = 495;
-		rank -= choose4[12-interestingEdges[0]-1];
-		rank -= choose3[12-interestingEdges[1]-1];
-		rank -= choose2[12-interestingEdges[2]-1];
-		rank -= (12-interestingEdges[3]-1);
-		return rank- 1;
+		int rank = interestingEdges[0] + choose2[interestingEdges[1]] + choose3[interestingEdges[2]] + choose4[interestingEdges[3]];
+		rank -= 69;
+		if (rank < 0) {
+			rank += 495;
+		}
+		return rank;
 	}
 	
 	public final int getIndex() {

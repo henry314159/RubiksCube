@@ -46,7 +46,7 @@ public class temp2{
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
 		temp2 t = new temp2();
 		
-		String[] allowedMoves = {"R", "R'", "L", "L'", "F", "F'", "B", "B'", "U", "U'", "D", "D'"};
+		String[] allowedMoves = {"R", "R'", "L", "L'", "F", "F'", "B", "B'", "U", "U'", "D", "D'", "R2", "L2", "F2", "B2", "U2", "D2"};
 		
 		LinkedList<Tuple2<temp2, LinkedList<String>>> queue = new LinkedList<Tuple2<temp2, LinkedList<String>>>();
 		boolean[] explored = new boolean[2048];
@@ -55,7 +55,7 @@ public class temp2{
 		String[][] distances = new String[2048][];
 		
 		queue.add(new Tuple2<temp2, LinkedList<String>>(t, new LinkedList<String>()));
-		distances[0] = new String[] {""};
+		distances[0] = new String[] {};
 		
 		while (!queue.isEmpty()) {
 			Tuple2<temp2, LinkedList<String>> dequeued = queue.removeFirst();
@@ -64,7 +64,7 @@ public class temp2{
 				temp2 w = new temp2(dequeued.first.edges);
 				w.doMove(move);
 				int code = w.getEdgeOrientation();
-				if (!explored[code]) {
+				if (!explored[code] || distances[code].length > dequeued.second.size() + 1) {
 					explored[code] = true;
 					LinkedList<String> wll = new LinkedList<String>();
 					wll.addAll(dequeued.second);
@@ -75,7 +75,7 @@ public class temp2{
 			}
 		}
 		Gson gson = new GsonBuilder().create();
-//		
+		
 		String json = gson.toJson(distances);
 		
 		FileWriter file = new FileWriter("thistlethwaiteG0-G1.json");
@@ -240,6 +240,11 @@ public class temp2{
 		edges[UF] = edges[UR];
 		edges[UR] = edges[UB];
 		edges[UB] = temp;
+		
+		updateEdgeOrientation(UF);
+		updateEdgeOrientation(UL);
+		updateEdgeOrientation(UR);
+		updateEdgeOrientation(UB);
 	}
 	
 	public final void UPrime() {
@@ -248,6 +253,11 @@ public class temp2{
 		edges[UR] = edges[UF];
 		edges[UF] = edges[UL];
 		edges[UL] = temp;
+		
+		updateEdgeOrientation(UF);
+		updateEdgeOrientation(UL);
+		updateEdgeOrientation(UR);
+		updateEdgeOrientation(UB);
 	}
 	
 	public final void U2() {
@@ -301,11 +311,6 @@ public class temp2{
 		edges[FL] = edges[DF];
 		edges[DF] = edges[FR];
 		edges[FR] = temp;
-		
-		updateEdgeOrientation(UF);
-		updateEdgeOrientation(FL);
-		updateEdgeOrientation(DF);
-		updateEdgeOrientation(FR);
 	}
 	
 	public final void FPrime() {
@@ -314,11 +319,6 @@ public class temp2{
 		edges[FR] = edges[DF];
 		edges[DF] = edges[FL];
 		edges[FL] = temp;
-	
-		updateEdgeOrientation(UF);
-		updateEdgeOrientation(FL);
-		updateEdgeOrientation(DF);
-		updateEdgeOrientation(FR);
 	}
 	
 	public final void F2() {
@@ -374,10 +374,6 @@ public class temp2{
 		edges[DB] = edges[BL];
 		edges[BL] = temp;
 		
-		updateEdgeOrientation(UB);
-		updateEdgeOrientation(BL);
-		updateEdgeOrientation(DB);
-		updateEdgeOrientation(BR);
 	}
 	
 	public final void BPrime() {
@@ -386,11 +382,6 @@ public class temp2{
 		edges[BL] = edges[DB];
 		edges[DB] = edges[BR];
 		edges[BR] = temp;
-		
-		updateEdgeOrientation(UB);
-		updateEdgeOrientation(BL);
-		updateEdgeOrientation(DB);
-		updateEdgeOrientation(BR);
 	}
 	
 	public final void B2() {
@@ -413,6 +404,10 @@ public class temp2{
 		edges[DR] = edges[DF];
 		edges[DF] = edges[DL];
 		edges[DL] = temp;
+		updateEdgeOrientation(DB);
+		updateEdgeOrientation(DL);
+		updateEdgeOrientation(DR);
+		updateEdgeOrientation(DF);
 	}
 	
 	public final void DPrime() {
@@ -421,6 +416,10 @@ public class temp2{
 		edges[DF] = edges[DR];
 		edges[DR] = edges[DB];
 		edges[DB] = temp;
+		updateEdgeOrientation(DB);
+		updateEdgeOrientation(DL);
+		updateEdgeOrientation(DR);
+		updateEdgeOrientation(DF);
 	}
 	
 	public final void D2() {

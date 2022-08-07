@@ -235,7 +235,7 @@ public class CubeGraphics extends PApplet {
 				switch (key) {
 				case ' ':
 					Cube c = new Cube();
-					CubeIndexModel ci = new CubeIndexModel();
+					temp2 ci = new temp2();
 					temp3 tmp = new temp3();
 					for (String move : movesDone) {
 						c.doMove(move);
