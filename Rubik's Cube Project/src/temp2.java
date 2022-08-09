@@ -240,11 +240,6 @@ public class temp2{
 		edges[UF] = edges[UR];
 		edges[UR] = edges[UB];
 		edges[UB] = temp;
-		
-		updateEdgeOrientation(UF);
-		updateEdgeOrientation(UL);
-		updateEdgeOrientation(UR);
-		updateEdgeOrientation(UB);
 	}
 	
 	public final void UPrime() {
@@ -253,11 +248,6 @@ public class temp2{
 		edges[UR] = edges[UF];
 		edges[UF] = edges[UL];
 		edges[UL] = temp;
-		
-		updateEdgeOrientation(UF);
-		updateEdgeOrientation(UL);
-		updateEdgeOrientation(UR);
-		updateEdgeOrientation(UB);
 	}
 	
 	public final void U2() {
@@ -311,6 +301,11 @@ public class temp2{
 		edges[FL] = edges[DF];
 		edges[DF] = edges[FR];
 		edges[FR] = temp;
+		
+		updateEdgeOrientation(UF);
+		updateEdgeOrientation(FL);
+		updateEdgeOrientation(DF);
+		updateEdgeOrientation(FR);
 	}
 	
 	public final void FPrime() {
@@ -319,6 +314,11 @@ public class temp2{
 		edges[FR] = edges[DF];
 		edges[DF] = edges[FL];
 		edges[FL] = temp;
+		
+		updateEdgeOrientation(UF);
+		updateEdgeOrientation(FL);
+		updateEdgeOrientation(DF);
+		updateEdgeOrientation(FR);
 	}
 	
 	public final void F2() {
@@ -374,6 +374,10 @@ public class temp2{
 		edges[DB] = edges[BL];
 		edges[BL] = temp;
 		
+		updateEdgeOrientation(UB);
+		updateEdgeOrientation(BR);
+		updateEdgeOrientation(DB);
+		updateEdgeOrientation(BL);
 	}
 	
 	public final void BPrime() {
@@ -382,6 +386,11 @@ public class temp2{
 		edges[BL] = edges[DB];
 		edges[DB] = edges[BR];
 		edges[BR] = temp;
+		
+		updateEdgeOrientation(UB);
+		updateEdgeOrientation(BR);
+		updateEdgeOrientation(DB);
+		updateEdgeOrientation(BL);
 	}
 	
 	public final void B2() {
@@ -404,10 +413,7 @@ public class temp2{
 		edges[DR] = edges[DF];
 		edges[DF] = edges[DL];
 		edges[DL] = temp;
-		updateEdgeOrientation(DB);
-		updateEdgeOrientation(DL);
-		updateEdgeOrientation(DR);
-		updateEdgeOrientation(DF);
+
 	}
 	
 	public final void DPrime() {
@@ -416,10 +422,7 @@ public class temp2{
 		edges[DF] = edges[DR];
 		edges[DR] = edges[DB];
 		edges[DB] = temp;
-		updateEdgeOrientation(DB);
-		updateEdgeOrientation(DL);
-		updateEdgeOrientation(DR);
-		updateEdgeOrientation(DF);
+	
 	}
 	
 	public final void D2() {

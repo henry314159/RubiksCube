@@ -68,17 +68,18 @@ public class temp3 {
 	
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
 		temp3 t = new temp3();
+		System.out.println(t.getIndex());
 		
-		String[] allowedMoves = {"R", "R'", "L", "L'", "F", "F'", "B", "B'", "R2", "U2", "L2", "D2", "F2", "B2"};
+		String[] allowedMoves = {"R", "R'", "L", "L'", "U", "U'", "D", "D'", "R2", "U2", "L2", "D2", "F2", "B2"};
 		
 		LinkedList<Tuple2<temp3, LinkedList<String>>> queue = new LinkedList<Tuple2<temp3, LinkedList<String>>>();
 		boolean[] explored = new boolean[1082565];
-		explored[0] = true;
+		explored[150903] = true;
 		
 		String[][] distances = new String[1082565][];
 		
 		queue.add(new Tuple2<temp3, LinkedList<String>>(t, new LinkedList<String>()));
-		distances[0] = new String[] {};
+		distances[150903] = new String[] {};
 		
 		while (!queue.isEmpty()) {
 			Tuple2<temp3, LinkedList<String>> dequeued = queue.removeFirst();
@@ -97,10 +98,15 @@ public class temp3 {
 				}
 			}
 		}
-//		String[][] bruh = new String[19][];
-//		for (int i = 1082546; i < 1082565; i++) {
-//			System.out.println(Arrays.toString(distances[i]));
-//		}
+		int x = 0;
+		for (String[] s : distances) {
+			if (s != null) {
+				
+			} else {
+				x++;
+			}
+		}
+		System.out.println(x);
 		Gson gson = new GsonBuilder().create();
 		
 		String json = gson.toJson(distances);
@@ -260,17 +266,13 @@ public class temp3 {
 		byte[] interestingEdges = new byte[4];
 		int index = 0;
 		for (int i = 0; i < 12 && index < 4; i++) {
-			if (edges[i] == 4 || edges[i] == 5 || edges[i] == 6 || edges[i] == 7) {
+			if (edges[i] == FL || edges[i] == FR || edges[i] == BL || edges[i] == BR) {
 				interestingEdges[index] = (byte)i;
 				index++;
 			}
 		}
 		Arrays.sort(interestingEdges);
 		int rank = interestingEdges[0] + choose2[interestingEdges[1]] + choose3[interestingEdges[2]] + choose4[interestingEdges[3]];
-		rank -= 69;
-		if (rank < 0) {
-			rank += 495;
-		}
 		return rank;
 	}
 	

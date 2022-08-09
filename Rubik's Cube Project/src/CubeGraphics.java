@@ -237,13 +237,18 @@ public class CubeGraphics extends PApplet {
 					Cube c = new Cube();
 					temp2 ci = new temp2();
 					temp3 tmp = new temp3();
+					temp5 tmp5 = new temp5();
+					temp6 tmp6 = new temp6();
 					for (String move : movesDone) {
 						c.doMove(move);
 						ci.doMove(move);
 						tmp.doMove(move);
+						tmp5.doMove(move);
+						tmp6.doMove(move);
 					}
+					System.out.println(movesDone.toString());
 					tab = false;
-					ThistlethwaiteTesting t = new ThistlethwaiteTesting(c, ci, tmp);
+					ThistlethwaiteTesting t = new ThistlethwaiteTesting(c, ci, tmp, tmp5, tmp6);
 					try {
 						movesToDo = t.solve();
 					} catch (ClassNotFoundException | IOException e) {

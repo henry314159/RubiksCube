@@ -1,12 +1,22 @@
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class temp4 {
-	
+
 	byte ULB = 0;
 	byte URB = 1;
 	byte URF = 2;
@@ -16,10 +26,9 @@ public class temp4 {
 	byte DRB = 6;
 	byte DRF = 7;
 	
-	byte[] corners = new byte[8];
+	byte[] corners = {0, 1, 2, 3, 4, 5, 6, 7};
 	// 0   1   2   3   4   5   6   7
 	// ULB URB URF ULF DLF DLB DRB DRF
-	// 0 - in position, 1 - twisted clockwise once, 2 - twisted clockwise twice
 	
 	byte UB = 0;
 	byte UR = 1;
@@ -34,12 +43,17 @@ public class temp4 {
 	byte DB = 10;
 	byte DR = 11;
 	
-	byte[] edges = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+	byte[] edges = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 	// 0  1  2  3  4  5  6  7  8  9  10 11
 	// UB UR UF UL FR FL BL BR DF DL DB DR
-	// 0 - oriented, 1 - flipped
 	
-	public temp4() {}
+	int[] choose2 = {0, 0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55};
+	int[] choose3 = {0, 0, 0, 1, 4, 10, 20, 35, 56, 84, 120, 165};
+	int[] choose4 = {0, 0, 0, 0, 1, 5, 15, 35, 70, 126, 210, 330};
+	
+	public temp4() {
+	}
+	
 	public temp4(byte[] corners, byte[] edges) {
 		for (int i = 0; i < 8; i++) {
 			this.corners[i] = corners[i];
@@ -49,20 +63,21 @@ public class temp4 {
 		}
 	}
 	
-	
-	public static void main(String[] args) throws IOException {
-		temp4 t = new temp4();
-		
+	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
+
 		String[] allowedMoves = {"R", "R'", "L", "L'", "R2", "U2", "L2", "D2", "F2", "B2"};
 		
 		LinkedList<Tuple2<temp4, LinkedList<String>>> queue = new LinkedList<Tuple2<temp4, LinkedList<String>>>();
 		boolean[] explored = new boolean[29400];
-		explored[0] = true;
+		explored[8522] = true;
 		
 		String[][] distances = new String[29400][];
 		
+		temp4 t = new temp4();
+		System.out.println(t.getIndex());
+		
 		queue.add(new Tuple2<temp4, LinkedList<String>>(t, new LinkedList<String>()));
-		distances[0] = new String[] {};
+		distances[8522] = new String[] {};
 		
 		while (!queue.isEmpty()) {
 			Tuple2<temp4, LinkedList<String>> dequeued = queue.removeFirst();
@@ -81,16 +96,41 @@ public class temp4 {
 				}
 			}
 		}
-		Gson gson = new GsonBuilder().create();	
-		String json = gson.toJson(distances);
-		FileWriter file = new FileWriter("thistlethwaiteG2-G3.json");
-		BufferedWriter buffer = new BufferedWriter(file);
-		buffer.write(json);
-		buffer.close();
-	}
-
-	public final int getIndex() {
-		return 0;
+		int x = 0;
+		int index = 0;
+		for (String[] s : distances) {
+			if (s != null) {
+			} else {
+				System.out.println(index);
+				x++;
+			}
+			index++;
+		}
+		System.out.println(x);
+		
+		temp4 test = new temp4();
+		test.L2();
+		test.R2();
+		test.R();
+		test.F2();
+		test.RPrime();
+		test.U2();
+		test.LPrime();
+		test.B2();
+		test.R2();
+		test.L();
+		test.D2();
+		test.L();
+		System.out.print(test.getIndex());
+		System.out.print(" ");
+		System.out.println(Arrays.toString(distances[test.getIndex()]));
+		
+//		Gson gson = new GsonBuilder().create();
+//		String json = gson.toJson(distances);		
+//		FileWriter file = new FileWriter("thistlethwaiteG2-G3.json");
+//		BufferedWriter buffer = new BufferedWriter(file);
+//		buffer.write(json);
+//		buffer.close();
 	}
 	
 	public final static String[] reverseAndClean(LinkedList<String> lls_) {
@@ -220,6 +260,175 @@ public class temp4 {
 			break;
 		}
 	}
+	
+	private final int getEdgeIndexL() {
+		int[] edgeMap = new int[12];
+		
+		edgeMap[UL] = 0;
+		edgeMap[UR] = 1;
+		edgeMap[FL] = 2;
+		edgeMap[FR] = 3;
+		edgeMap[BL] = 4;
+		edgeMap[BR] = 5;
+		edgeMap[DL] = 6;
+		edgeMap[DR] = 7;
+		
+		int[] edgeCombo = new int[4];
+		int edgeComboInd = 0;
+		
+		for (int i = 0; i < 12 && edgeComboInd < 4; i++) {
+			if (edges[i] == UL ||
+				edges[i] == FL ||
+				edges[i] == DL ||
+				edges[i] == BL) {
+				edgeCombo[edgeComboInd++] = edgeMap[i];
+			}
+		}
+		Arrays.sort(edgeCombo);
+		return edgeCombo[0]+choose2[edgeCombo[1]]+choose3[edgeCombo[2]]+choose4[edgeCombo[3]];
+	}
+	
+	private final int getTetradPermIndex() {
+		int[] cornerCombo = new int[4];
+		int cornerComboInd = 0;
+		
+		for (int i = 0; i < 8 && cornerComboInd < 4; i++) {
+			if (corners[i] == ULB ||
+				corners[i] == URF ||
+				corners[i] == DLF ||
+				corners[i] == DRB) {
+				cornerCombo[cornerComboInd++] = i;
+			}
+		}
+		Arrays.sort(cornerCombo);
+		return cornerCombo[0]+choose2[cornerCombo[1]]+choose3[cornerCombo[2]]+choose4[cornerCombo[3]];
+	}
+	
+	public final int getCornerIndex(int corner) {
+		for (int i = 0; i < 8; i ++) {
+			if  (corners[i] - corner == 0)
+				return i;
+		}
+		return -1;
+	}
+	
+	private final int getTetradTwistAndParity() {
+		byte[] rightTetrad = new byte[4];
+		byte[] leftTetrad = new byte[4];
+		
+		int rightTetradIndex = 0;
+		int leftTetradIndex = 0;
+		for (int i = 0; i < 8; i++) {
+			if (corners[i]==URF||corners[i]==ULB||corners[i]==DLF||corners[i]==DRB) {
+				leftTetrad[leftTetradIndex] = (byte)corners[i];
+				leftTetradIndex++;
+			} else {
+				rightTetrad[rightTetradIndex] = (byte)corners[i];
+				rightTetradIndex++;
+			}
+		}
+		byte[] newCorners = {
+				leftTetrad[0],
+				rightTetrad[0],
+				leftTetrad[1],
+				rightTetrad[1],
+				leftTetrad[2],
+				rightTetrad[2],
+				leftTetrad[3],
+				rightTetrad[3],
+			};
+
+		temp4 newTemp4 = new temp4(newCorners, this.edges);
+		
+		int drb = newTemp4.getCornerIndex(DRB);
+		switch(drb) {
+		case 0:
+			newTemp4.B2();
+			break;
+		case 2:
+			newTemp4.R2();
+			break;
+		case 4:
+			newTemp4.D2();
+			break;
+		}
+		
+		int dlf = newTemp4.getCornerIndex(DLF);
+		switch(dlf) {
+		case 0:
+			newTemp4.L2();
+			break;
+		case 2:
+			newTemp4.F2();
+		}
+		
+		int ulb = newTemp4.getCornerIndex(ULB);
+		if (ulb == 2) {
+			newTemp4.U2();
+		}
+		
+		int dlb = newTemp4.getCornerIndex(DLB);
+		switch(dlb) {
+		case 7:
+			newTemp4.F2();
+			newTemp4.L2();
+			newTemp4.F2();
+			newTemp4.U2();
+			break;
+		case 3:
+			newTemp4.U2();
+			newTemp4.F2();
+			newTemp4.U2();
+			newTemp4.L2();
+			break;
+		case 1:
+			newTemp4.L2();
+			newTemp4.U2();
+			newTemp4.L2();
+			newTemp4.F2();
+			break;
+		}
+				
+		int ulf = newTemp4.corners[ULF];
+		int urb = newTemp4.corners[URB];
+		int drf = newTemp4.corners[DRF];
+		int[] map = {0, 0, 0, 1, 0, 0, 0, 2};
+		
+		ulf = map[ulf];
+		urb = map[urb];
+		drf = map[drf];
+		
+		int[] perm = {ulf, urb, drf};
+		int[] lehmer = new int[3];
+		for (int i = 0; i < 3; i++) {
+			lehmer[i] = perm[i];
+		}
+		for (int i = 1; i < 3; ++i) {
+			int j = i;
+			while (j-- > 0) {
+				if (perm[j] < perm[i])
+					lehmer[i] -= 1;
+			}
+		}
+		return lehmer[0]*2+lehmer[1]+lehmer[2];
+		
+	}
+	
+	public final int getIndex() {
+//		System.out.print(getEdgeIndexL());
+//		System.out.print(" ");
+//		System.out.print(getTetradPermIndex());
+//		System.out.print(" ");
+//		System.out.print(getTetradTwistAndParity());
+//		System.out.print(" ");
+//		System.out.print(((getEdgeIndexL()*70)+getTetradPermIndex())*6+getTetradTwistAndParity());
+//		System.out.print(" ");
+//		System.out.print(Arrays.toString(corners));
+//		System.out.print(" ");
+//		System.out.println(Arrays.toString(edges));
+		return ((getEdgeIndexL()*70)+getTetradPermIndex())*6+getTetradTwistAndParity();
+	}
+	
 	private static final byte[] swap(byte[] corners2, byte index1, byte index2) {
 		byte temp = corners2[index1];
 		corners2[index1] = corners2[index2];
@@ -284,7 +493,7 @@ public class temp4 {
 		edges[DL] = edges[FL];
 		edges[FL] = edges[UL];
 		edges[UL] = temp;
-		
+	
 	}
 	
 	public final void LPrime() {
@@ -300,7 +509,6 @@ public class temp4 {
 		edges[FL] = edges[DL];
 		edges[DL] = temp;
 		
-
 	}
 	
 	public final void L2() {
@@ -346,7 +554,7 @@ public class temp4 {
 		edges[FR] = edges[DF];
 		edges[DF] = edges[FL];
 		edges[FL] = temp;
-		
+	
 	}
 	
 	public final void F2() {
@@ -377,7 +585,6 @@ public class temp4 {
 		edges[UR] = edges[FR];
 		edges[FR] = edges[DR];
 		edges[DR] = temp;
-		
 	}
 	
 	public final void RPrime() {
@@ -424,7 +631,6 @@ public class temp4 {
 		edges[DB] = edges[BL];
 		edges[BL] = temp;
 		
-	
 	}
 	
 	public final void BPrime() {

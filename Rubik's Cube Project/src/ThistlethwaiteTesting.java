@@ -20,11 +20,15 @@ public class ThistlethwaiteTesting {
 	private Cube c;
 	private temp2 ci;
 	private temp3 tmp;
+	private temp5 tmp5;
+	private temp6 tmp6;
 	
-	public ThistlethwaiteTesting(Cube c, temp2 ci, temp3 tmp) {
+	public ThistlethwaiteTesting(Cube c, temp2 ci, temp3 tmp, temp5 tmp5, temp6 tmp6) {
 		this.c = c;
 		this.ci = ci;
 		this.tmp = tmp;
+		this.tmp5 = tmp5;
+		this.tmp6 = tmp6;
 	}
 	
 	public LinkedList<String> solve() throws FileNotFoundException, IOException, ClassNotFoundException {
@@ -38,9 +42,12 @@ public class ThistlethwaiteTesting {
 			c.doMove(move);
 			ci.doMove(move);
 			tmp.doMove(move);
+			tmp5.doMove(move);
+			tmp6.doMove(move);
 			solve.add(move);
 		}
-		System.out.println(solve.toString());
+		
+		//System.out.println(solve.toString());
 		
 		String[][] data2 = gson.fromJson(new FileReader("thistlethwaiteG1-G2.json"), String[][].class);
 		String[] phase2Solve = data2[this.tmp.getIndex()];
@@ -49,34 +56,36 @@ public class ThistlethwaiteTesting {
 			c.doMove(move);
 			ci.doMove(move);
 			tmp.doMove(move);
+			tmp5.doMove(move);
+			tmp6.doMove(move);
 			solve.add(move);
 		}
 		
-		System.out.println(solve.toString());
-		System.out.println(tmp.getEdgePartialCombination());
+		//System.out.println(solve.toString());
 		
-		IDDFS phase3 = new IDDFS(c, 3);
+		String[][] data3 = gson.fromJson(new FileReader("thistlethwaiteG2-G3.json"), String[][].class);
+		String[] phase3Solve = data3[this.tmp5.getIndex()];
 		
-		for (String move : phase3.result) {
+		for (String move : phase3Solve) {
 			c.doMove(move);
+			tmp6.doMove(move);
 			solve.add(move);
 		}
+		
+		// System.out.println(solve.toString());
+		
+		String[][] data4 = gson.fromJson(new FileReader("thistlethwaiteG3-G4.json"), String[][].class);
+		String[] phase4Solve = data4[this.tmp6.getIndex()];
+		
+		for (String move : phase4Solve) {
+			solve.add(move);
+		}
+		
+		
+		
 		System.out.println(solve.toString());
-
+		System.out.println(solve.size());
 		System.out.println();
-		
-		IDDFS phase4 = new IDDFS(c, 4);
-		
-		for (String move : phase4.result) {
-			c.doMove(move);
-			solve.add(move);
-		}
-
-		IDDFS phase5 = new IDDFS(c, 5);
-		
-		for (String move : phase5.result) {
-			solve.add(move);
-		}
 		
 		return solve;
 	}
