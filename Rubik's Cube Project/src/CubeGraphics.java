@@ -1,18 +1,15 @@
 import processing.core.*;
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.LinkedList;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
-
 import peasy.*;
 
 public class CubeGraphics extends PApplet {
 	PeasyCam cam;
-	Cubie[] cube = new Cubie[27];
+	GraphicalCubie[] cube = new GraphicalCubie[27];
 	
 	boolean solving = false;
 	
@@ -37,40 +34,31 @@ public class CubeGraphics extends PApplet {
 		data4 = gson.fromJson(new FileReader("thistlethwaiteG3-G4.json"), String[][].class);
 	}
 	
-	public LinkedList<String> solve(Cube c, temp2 ci, temp3 tmp, temp5 tmp5, temp6 tmp6) throws FileNotFoundException, IOException, ClassNotFoundException {
+	public LinkedList<String> solve(CubeIndexModel ci) {
 		LinkedList<String> solve = new LinkedList<String>();
 		
-		String[] phase1Solve = data1[ci.getEdgeOrientation()];
+		String[] phase1Solve = data1[ci.getIndex0()];
 		
 		for (String move : phase1Solve) {
-			c.doMove(move);
 			ci.doMove(move);
-			tmp.doMove(move);
-			tmp5.doMove(move);
-			tmp6.doMove(move);
 			solve.add(move);
 		}
 		
-		String[] phase2Solve = data2[tmp.getIndex()];
+		String[] phase2Solve = data2[ci.getIndex1()];
 		
 		for (String move : phase2Solve) {
-			c.doMove(move);
 			ci.doMove(move);
-			tmp.doMove(move);
-			tmp5.doMove(move);
-			tmp6.doMove(move);
 			solve.add(move);
 		}
 		
-		String[] phase3Solve = data3[tmp5.getIndex()];
+		String[] phase3Solve = data3[ci.getIndex2()];
 		
 		for (String move : phase3Solve) {
-			c.doMove(move);
-			tmp6.doMove(move);
+			ci.doMove(move);
 			solve.add(move);
 		}
-				
-		String[] phase4Solve = data4[tmp6.getIndex()];
+
+		String[] phase4Solve = data4[ci.getIndex3()];
 		
 		for (String move : phase4Solve) {
 			solve.add(move);
@@ -159,7 +147,7 @@ public class CubeGraphics extends PApplet {
 				for (int z=-1; z<2; z++) {
 					PMatrix3D matrix = new PMatrix3D();
 					matrix.translate(x, y, z);
-					cube[index] = new Cubie(matrix, x, y ,z);
+					cube[index] = new GraphicalCubie(matrix, x, y ,z);
 					index++;
 				}
 			}
@@ -203,125 +191,126 @@ public class CubeGraphics extends PApplet {
 	}
 	
 	public void draw() {
-		if (m != null)
+		if (m != null) {
 			m.update();
-		if (solving && !m.animating) {
-			if (!movesToDo.isEmpty()) {
-				String move = movesToDo.removeFirst();
-				LinkedList<String> temp = new LinkedList<String>();
-				
-				switch (move) {
-				case "R":
-					shift = 1;
-					m = new Move(1, 0, 0, 1);
-					m.start();
-					break;
-				case "L":
-					shift = 1;
-					m = new Move(-1, 0, 0, -1);
-					m.start();
-					break;
-				case "F":
-					shift = 1;
-					m = new Move(0, 0, 1, 1);
-					m.start();
-					break;
-				case "B":
-					shift = 1;
-					m = new Move(0, 0, -1, -1);
-					m.start();
-					break;
-				case "U":
-					shift = 1;
-					m = new Move(0, -1, 0, 1);
-					m.start();
-					break;
-				case "D":
-					shift = 1;
-					m = new Move(0, 1, 0, -1);
-					m.start();
-					break;
-				case "R'":
-					shift = -1;
-					m = new Move(1, 0, 0, 1);
-					m.start();
-					break;
-				case "L'":
-					shift = -1;
-					m = new Move(-1, 0, 0, -1);
-					m.start();
-					break;
-				case "F'":
-					shift = -1;
-					m = new Move(0, 0, 1, 1);
-					m.start();
-					break;
-				case "B'":
-					shift = -1;
-					m = new Move(0, 0, -1, -1);
-					m.start();
-					break;
-				case "U'":
-					shift = -1;
-					m = new Move(0, -1, 0, 1);
-					m.start();
-					break;
-				case "D'":
-					shift = -1;
-					m = new Move(0, 1, 0, -1);
-					m.start();
-					break;
-				case "R2":
-					shift = 1;
-					m = new Move(1, 0, 0, 1);
-					m.start();
-					temp.add("R");
-					temp.addAll(movesToDo);
-					movesToDo = temp;
-					break;
-				case "L2":
-					shift = 1;
-					m = new Move(-1, 0, 0, -1);
-					m.start();
-					temp.add("L");
-					temp.addAll(movesToDo);
-					movesToDo = temp;
-					break;
-				case "F2":
-					shift = 1;
-					m = new Move(0, 0, 1, 1);
-					m.start();
-					temp.add("F");
-					temp.addAll(movesToDo);
-					movesToDo = temp;
-					break;
-				case "B2":
-					shift = 1;
-					m = new Move(0, 0, -1, -1);
-					m.start();
-					temp.add("B");
-					temp.addAll(movesToDo);
-					movesToDo = temp;
-					break;
-				case "U2":
-					shift = 1;
-					m = new Move(0, -1, 0, 1);
-					m.start();
-					temp.add("U");
-					temp.addAll(movesToDo);
-					movesToDo = temp;
-					break;
-				case "D2":
-					shift = 1;
-					m = new Move(0, 1, 0, -1);
-					m.start();
-					temp.add("D");
-					temp.addAll(movesToDo);
-					movesToDo = temp;
-					break;
-				}
-			} else
-				solving = false;
+			if (solving && !m.animating) {
+				if (!movesToDo.isEmpty()) {
+					String move = movesToDo.removeFirst();
+					LinkedList<String> temp = new LinkedList<String>();
+					
+					switch (move) {
+					case "R":
+						shift = 1;
+						m = new Move(1, 0, 0, 1);
+						m.start();
+						break;
+					case "L":
+						shift = 1;
+						m = new Move(-1, 0, 0, -1);
+						m.start();
+						break;
+					case "F":
+						shift = 1;
+						m = new Move(0, 0, 1, 1);
+						m.start();
+						break;
+					case "B":
+						shift = 1;
+						m = new Move(0, 0, -1, -1);
+						m.start();
+						break;
+					case "U":
+						shift = 1;
+						m = new Move(0, -1, 0, 1);
+						m.start();
+						break;
+					case "D":
+						shift = 1;
+						m = new Move(0, 1, 0, -1);
+						m.start();
+						break;
+					case "R'":
+						shift = -1;
+						m = new Move(1, 0, 0, 1);
+						m.start();
+						break;
+					case "L'":
+						shift = -1;
+						m = new Move(-1, 0, 0, -1);
+						m.start();
+						break;
+					case "F'":
+						shift = -1;
+						m = new Move(0, 0, 1, 1);
+						m.start();
+						break;
+					case "B'":
+						shift = -1;
+						m = new Move(0, 0, -1, -1);
+						m.start();
+						break;
+					case "U'":
+						shift = -1;
+						m = new Move(0, -1, 0, 1);
+						m.start();
+						break;
+					case "D'":
+						shift = -1;
+						m = new Move(0, 1, 0, -1);
+						m.start();
+						break;
+					case "R2":
+						shift = 1;
+						m = new Move(1, 0, 0, 1);
+						m.start();
+						temp.add("R");
+						temp.addAll(movesToDo);
+						movesToDo = temp;
+						break;
+					case "L2":
+						shift = 1;
+						m = new Move(-1, 0, 0, -1);
+						m.start();
+						temp.add("L");
+						temp.addAll(movesToDo);
+						movesToDo = temp;
+						break;
+					case "F2":
+						shift = 1;
+						m = new Move(0, 0, 1, 1);
+						m.start();
+						temp.add("F");
+						temp.addAll(movesToDo);
+						movesToDo = temp;
+						break;
+					case "B2":
+						shift = 1;
+						m = new Move(0, 0, -1, -1);
+						m.start();
+						temp.add("B");
+						temp.addAll(movesToDo);
+						movesToDo = temp;
+						break;
+					case "U2":
+						shift = 1;
+						m = new Move(0, -1, 0, 1);
+						m.start();
+						temp.add("U");
+						temp.addAll(movesToDo);
+						movesToDo = temp;
+						break;
+					case "D2":
+						shift = 1;
+						m = new Move(0, 1, 0, -1);
+						m.start();
+						temp.add("D");
+						temp.addAll(movesToDo);
+						movesToDo = temp;
+						break;
+					}
+				} else
+					solving = false;
+			}
 		}
 		
 		background(200);
@@ -358,29 +347,18 @@ public class CubeGraphics extends PApplet {
 				
 				switch (key) {
 				case ' ':
-					Cube c = new Cube();
-					temp2 ci = new temp2();
-					temp3 tmp = new temp3();
-					temp5 tmp5 = new temp5();
-					temp6 tmp6 = new temp6();
+					CubeIndexModel ci = new CubeIndexModel();
 					for (String move : movesDone) {
-						c.doMove(move);
 						ci.doMove(move);
-						tmp.doMove(move);
-						tmp5.doMove(move);
-						tmp6.doMove(move);
 					}
 					movesDone = cleanSolve(movesDone);
 					System.out.println(movesDone.toString());
 					System.out.println(movesDone.size());
 					tab = false;
-					try {
-						movesToDo = solve(c, ci, tmp, tmp5, tmp6);
-					} catch (ClassNotFoundException | IOException e) {
-						e.printStackTrace();
-					}
+					movesToDo = solve(ci);
 					movesDone = new LinkedList<String>();
-					solving = true;
+					if (movesToDo.size() > 0)
+						solving = true;
 					break;
 				case TAB:
 					tab ^= true;
@@ -458,14 +436,14 @@ public class CubeGraphics extends PApplet {
 		}
 	}
 	
-	class Cubie {
+	class GraphicalCubie {
 		PMatrix3D matrix;
 		int x = 0;
 		int y = 0;
 		int z = 0;
 		Face[] faces = new Face[6];
 		
-		Cubie(PMatrix3D m, int x, int y, int z) {
+		GraphicalCubie(PMatrix3D m, int x, int y, int z) {
 			this.matrix = m;
 			this.x = x;
 			this.y = y;
