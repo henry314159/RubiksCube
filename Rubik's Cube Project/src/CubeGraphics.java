@@ -1,7 +1,13 @@
 import processing.core.*;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
+import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+
 import peasy.*;
 
 public class CubeGraphics extends PApplet {
@@ -17,6 +23,124 @@ public class CubeGraphics extends PApplet {
 	
 	LinkedList<String> movesDone = new LinkedList<String>();
 	LinkedList<String> movesToDo = new LinkedList<String>();
+	
+	String[][] data1;
+	String[][] data2;
+	String[][] data3;
+	String[][] data4;
+	
+	public CubeGraphics() throws JsonSyntaxException, JsonIOException, FileNotFoundException {
+		Gson gson = new Gson();
+		data1 = gson.fromJson(new FileReader("thistlethwaiteG0-G1.json"), String[][].class);
+		data2 = gson.fromJson(new FileReader("thistlethwaiteG1-G2.json"), String[][].class);
+		data3 = gson.fromJson(new FileReader("thistlethwaiteG2-G3.json"), String[][].class);
+		data4 = gson.fromJson(new FileReader("thistlethwaiteG3-G4.json"), String[][].class);
+	}
+	
+	public LinkedList<String> solve(Cube c, temp2 ci, temp3 tmp, temp5 tmp5, temp6 tmp6) throws FileNotFoundException, IOException, ClassNotFoundException {
+		LinkedList<String> solve = new LinkedList<String>();
+		
+		String[] phase1Solve = data1[ci.getEdgeOrientation()];
+		
+		for (String move : phase1Solve) {
+			c.doMove(move);
+			ci.doMove(move);
+			tmp.doMove(move);
+			tmp5.doMove(move);
+			tmp6.doMove(move);
+			solve.add(move);
+		}
+		
+		String[] phase2Solve = data2[tmp.getIndex()];
+		
+		for (String move : phase2Solve) {
+			c.doMove(move);
+			ci.doMove(move);
+			tmp.doMove(move);
+			tmp5.doMove(move);
+			tmp6.doMove(move);
+			solve.add(move);
+		}
+		
+		String[] phase3Solve = data3[tmp5.getIndex()];
+		
+		for (String move : phase3Solve) {
+			c.doMove(move);
+			tmp6.doMove(move);
+			solve.add(move);
+		}
+				
+		String[] phase4Solve = data4[tmp6.getIndex()];
+		
+		for (String move : phase4Solve) {
+			solve.add(move);
+		}
+		
+		solve = cleanSolve(solve);
+		
+		System.out.println(solve.toString());
+		System.out.println(solve.size());
+		System.out.println();
+		
+		return solve;
+	}
+	
+	private static LinkedList<String> cleanSolve(LinkedList<String> solve) {
+		if (solve.size() == 0) {
+			return solve;
+		}
+		LinkedList<String> clean = new LinkedList<String>();
+		String lastItem = solve.removeFirst();
+		clean.add(lastItem);
+		for (String item : solve) {
+			String cleanItem = item;
+			if (item.startsWith(""+lastItem.charAt(0))) {
+				if (item.length() == lastItem.length()) {
+					if (item.length() == 1) {
+						cleanItem = item.charAt(0) + "2";
+					} else {
+						if (item.endsWith("'") && lastItem.endsWith("'")) {
+							cleanItem = item.charAt(0) + "2";
+						} else if ((item.endsWith("'") && lastItem.endsWith("2")) || (item.endsWith("2") && lastItem.endsWith("'"))) {
+							cleanItem = ""+item.charAt(0);
+						} else {
+							cleanItem = null;
+						}
+					}
+				} else {
+					if (item.length() < lastItem.length()) {
+						if (lastItem.endsWith("2")) {
+							cleanItem = item.charAt(0) + "'";
+						} else {
+							cleanItem = null;
+						}
+					} else {
+						if (item.endsWith("2")) {
+							cleanItem = item.charAt(0) + "'";
+						} else {
+							cleanItem = null;
+						}
+					}
+				}
+			}
+			lastItem = cleanItem;
+			if (cleanItem == item) {
+				clean.add(cleanItem);
+			} else {
+				clean.removeLast();
+				if (cleanItem != null) {
+					clean.add(cleanItem);
+				} else {
+					if (clean.size() != 0) {
+						lastItem = clean.getLast();
+					} else {
+						lastItem = " ";
+					}
+				}
+			}
+		}
+		return clean;
+	}
 	
 	public static void main(String[] args) {
 		PApplet.main("CubeGraphics");
@@ -246,11 +370,12 @@ public class CubeGraphics extends PApplet {
 						tmp5.doMove(move);
 						tmp6.doMove(move);
 					}
+					movesDone = cleanSolve(movesDone);
 					System.out.println(movesDone.toString());
+					System.out.println(movesDone.size());
 					tab = false;
-					ThistlethwaiteTesting t = new ThistlethwaiteTesting(c, ci, tmp, tmp5, tmp6);
 					try {
-						movesToDo = t.solve();
+						movesToDo = solve(c, ci, tmp, tmp5, tmp6);
 					} catch (ClassNotFoundException | IOException e) {
 						e.printStackTrace();
 					}
