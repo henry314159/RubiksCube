@@ -57,6 +57,13 @@ public class CubeIndexModel {
 	
 	int[] bases = {90, 6, 1};
 	
+	public static void main(String[] args) throws IOException {
+		writeTable(0);
+		writeTable(1);
+		writeTable(2);
+		writeTable(3);
+	}
+	
 	public CubeIndexModel() {
 		for (byte i = 0; i < 8; i++) {
 			corners[i] = new Cubie(i, (byte) 0);
@@ -136,7 +143,7 @@ public class CubeIndexModel {
 		}
 	}
 	
-	public final void writeTable(int tableNum) throws IOException {
+	public static final void writeTable(int tableNum) throws IOException {
 		int tableSize = -1;
 		String filename = "";
 		LinkedList<String> allowedMoves = new LinkedList<String>();
