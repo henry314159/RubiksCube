@@ -1,9 +1,10 @@
+// Reference Ben Botto properly
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -19,9 +20,6 @@ public class CubeIndexModel {
 	byte DRF = 7;
 	
 	Cubie[] corners = new Cubie[8];
-	// 0   1   2   3   4   5   6   7
-	// ULB URB URF ULF DLF DLB DRB DRF
-	// 0 - in position, 1 - twisted clockwise once, 2 - twisted clockwise twice
 	
 	byte UB = 0;
 	byte UR = 1;
@@ -37,9 +35,6 @@ public class CubeIndexModel {
 	byte DR = 11;
 	
 	Cubie[] edges = new Cubie[12];
-	// 0  1  2  3  4  5  6  7  8  9  10 11
-	// UB UR UF UL FR FL BL BR DF DL DB DR
-	// 0 - oriented, 1 - flipped
 	
 	int[] choose2 = {0, 0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55};
 	int[] choose3 = {0, 0, 0, 1, 4, 10, 20, 35, 56, 84, 120, 165};
@@ -55,13 +50,27 @@ public class CubeIndexModel {
 			{6,7}
 	};
 	
-	int[] bases = {90, 6, 1};
+	int[] bases = {90, 6, 1}; // {6C2*6C1*6C0, 6C1*6C0, 6C0}
 	
-	public static void main(String[] args) throws IOException {
-		writeTable(0);
-		writeTable(1);
-		writeTable(2);
-		writeTable(3);
+	public static void main(String[] args) {
+		CubeIndexModel ci = new CubeIndexModel();
+		ci.F();
+		ci.R();
+		ci.L();
+		ci.B();
+		ci.U();
+		ci.D();
+		for (int i = 0; i < 8; i++) {
+			System.out.print(ci.corners[i].getPos());
+			System.out.print(", ");
+			System.out.println(ci.corners[i].getOrient());
+		}
+		System.out.println();
+		for (int i = 0; i < 12; i++) {
+			System.out.print(ci.edges[i].getPos());
+			System.out.print(", ");
+			System.out.println(ci.edges[i].getOrient());
+		}
 	}
 	
 	public CubeIndexModel() {
@@ -144,8 +153,8 @@ public class CubeIndexModel {
 	}
 	
 	public static final void writeTable(int tableNum) throws IOException {
-		int tableSize = -1;
-		String filename = "";
+		int tableSize;
+		String filename;
 		LinkedList<String> allowedMoves = new LinkedList<String>();
 		allowedMoves.add("R2");
 		allowedMoves.add("L2");
@@ -194,6 +203,9 @@ public class CubeIndexModel {
 			tableSize = 663552;
 			filename = "thistlethwaiteG3-G4.json";
 			break;
+		default:
+			System.out.println("Invalid table number");
+			return;
 		}
 		
 		CubeIndexModel c = new CubeIndexModel();
@@ -578,7 +590,7 @@ public class CubeIndexModel {
 		}
 		return 3*lehmer[0]+lehmer[1];
 	}
-
+///////////////////////////////// REFACTOR + ADD LAST MOVES
 	public final void U() {
 		Cubie temp = corners[ULF];
 		corners[ULF] = corners[URF];

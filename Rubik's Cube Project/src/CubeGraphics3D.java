@@ -1,3 +1,5 @@
+// Reference The Coding Train properly
+
 import processing.core.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -7,7 +9,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import peasy.*;
 
-public class CubeGraphics extends PApplet {
+public class CubeGraphics3D extends PApplet {
 	PeasyCam cam;
 	GraphicalCubie[] cube = new GraphicalCubie[27];
 	
@@ -26,7 +28,7 @@ public class CubeGraphics extends PApplet {
 	String[][] data3;
 	String[][] data4;
 	
-	public CubeGraphics() throws JsonSyntaxException, JsonIOException, FileNotFoundException {
+	public CubeGraphics3D() throws JsonSyntaxException, JsonIOException, FileNotFoundException {
 		Gson gson = new Gson();
 		data1 = gson.fromJson(new FileReader("thistlethwaiteG0-G1.json"), String[][].class);
 		data2 = gson.fromJson(new FileReader("thistlethwaiteG1-G2.json"), String[][].class);
@@ -131,7 +133,8 @@ public class CubeGraphics extends PApplet {
 	}
 	
 	public static void main(String[] args) {
-		PApplet.main("CubeGraphics");
+		PApplet.main("CubeGraphics3D");
+		
 	}
 	
 	public void settings() {
@@ -139,6 +142,7 @@ public class CubeGraphics extends PApplet {
 	}
 	
 	public void setup() {
+		
 		cam = new PeasyCam(this, 600);
 		
 		int index = 0;
@@ -153,7 +157,7 @@ public class CubeGraphics extends PApplet {
 			}
 		}
 	}
-	
+//////////////////////////////////////////////// REFACTOR	
 	void turnZ(int index, int dir) {
 		for (int i=0; i<cube.length; i++) {
 			if (cube[i].z == index) {
@@ -189,7 +193,7 @@ public class CubeGraphics extends PApplet {
 			}
 		}
 	}
-	
+//////////////////////////////////////////////
 	public void draw() {
 		if (m != null) {
 			m.update();
@@ -498,7 +502,7 @@ public class CubeGraphics extends PApplet {
 			this.y = y;
 			this.z = z;
 		}
-		
+		///////////////////////////////// REFACTOR
 		void turnFacesX(int dir) {
 			for (Face f : faces) {
 				f.turnX(HALF_PI*dir);
@@ -516,7 +520,7 @@ public class CubeGraphics extends PApplet {
 				f.turnZ(HALF_PI*dir);
 			}
 		}
-		
+///////////////////////////////// 
 		void show() {
 			noFill();
 			stroke(0);
@@ -538,7 +542,7 @@ public class CubeGraphics extends PApplet {
 			this.normal = normal;
 			this.c = c;
 		}
-		
+///////////////////////////////// REFACTOR
 		void turnZ(float angle) {
 			PVector v2 = new PVector();
 			v2.x = round(normal.x * cos(angle) - normal.y * sin(angle));
@@ -562,7 +566,7 @@ public class CubeGraphics extends PApplet {
 			v2.x = round(normal.x);
 			normal = v2;
 		}
-		
+/////////////////////////////////
 		void show() {
 			fill(c[0], c[1], c[2]);
 			rectMode(CENTER);
