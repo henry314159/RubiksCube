@@ -1,4 +1,3 @@
-// Reference The Coding Train properly
 
 import processing.core.*;
 import java.io.FileNotFoundException;
@@ -14,6 +13,8 @@ public class CubeGraphics3D extends PApplet {
 	GraphicalCubie[] cube = new GraphicalCubie[27];
 	
 	boolean solving = false;
+	boolean displayingSolve = false;
+	boolean nextMove = false;
 	
 	int shift = 1;
 	boolean tab = false;
@@ -34,6 +35,154 @@ public class CubeGraphics3D extends PApplet {
 		data2 = gson.fromJson(new FileReader("thistlethwaiteG1-G2.json"), String[][].class);
 		data3 = gson.fromJson(new FileReader("thistlethwaiteG2-G3.json"), String[][].class);
 		data4 = gson.fromJson(new FileReader("thistlethwaiteG3-G4.json"), String[][].class);
+	}
+	
+	private final static LinkedList<String> reverseAndClean(LinkedList<String> lls_) {
+		LinkedList<String> lls = new LinkedList<String>();
+		lls.addAll(lls_);
+		LinkedList<String> out = new LinkedList<String>();
+		while (!lls.isEmpty()) {
+			String temp = lls.removeLast();
+			switch(temp) {
+			case "R":
+				temp = "R'";
+				break;
+			case "L":
+				temp = "L'";
+				break;
+			case "U":
+				temp = "U'";
+				break;
+			case "D":
+				temp = "D'";
+				break;
+			case "F":
+				temp = "F'";
+				break;
+			case "B":
+				temp = "B'";
+				break;
+			case "R'":
+				temp = "R";
+				break;
+			case "L'":
+				temp = "L";
+				break;
+			case "U'":
+				temp = "U";
+				break;
+			case "D'":
+				temp = "D";
+				break;
+			case "F'":
+				temp = "F";
+				break;
+			case "B'":
+				temp = "B";
+				break;
+			case "R2":
+				temp = "R2";
+				break;
+			case "L2":
+				temp = "L2";
+				break;
+			case "U2":
+				temp = "U2";
+				break;
+			case "D2":
+				temp = "D2";
+				break;
+			case "F2":
+				temp = "F2";
+				break;
+			case "B2":
+				temp = "B2";
+				break;
+			case "r":
+				temp = "r'";
+				break;
+			case "l":
+				temp = "l'";
+				break;
+			case "u":
+				temp = "u'";
+				break;
+			case "d":
+				temp = "d'";
+				break;
+			case "f":
+				temp = "f'";
+				break;
+			case "b":
+				temp = "b'";
+				break;
+			case "r'":
+				temp = "r";
+				break;
+			case "l'":
+				temp = "l";
+				break;
+			case "u'":
+				temp = "u";
+				break;
+			case "d'":
+				temp = "d";
+				break;
+			case "f'":
+				temp = "f";
+				break;
+			case "b'":
+				temp = "b";
+				break;
+			case "r2":
+				temp = "r2";
+				break;
+			case "l2":
+				temp = "l2";
+				break;
+			case "u2":
+				temp = "u2";
+				break;
+			case "d2":
+				temp = "d2";
+				break;
+			case "f2":
+				temp = "f2";
+				break;
+			case "b2":
+				temp = "b2";
+				break;
+			case "e":
+				temp = "e'";
+				break;
+			case "e'":
+				temp = "e";
+				break;
+			case "e2":
+				temp = "e2";
+				break;
+			case "m":
+				temp = "m'";
+				break;
+			case "m'":
+				temp = "m";
+				break;
+			case "m2":
+				temp = "m2";
+				break;
+			case "s":
+				temp = "s'";
+				break;
+			case "s'":
+				temp = "s";
+				break;
+			case "s2":
+				temp = "s2";
+				break;
+			}
+			out.add(temp);
+		}
+		return out;
 	}
 	
 	public LinkedList<String> solve(CubeIndexModel ci) {
@@ -134,7 +283,6 @@ public class CubeGraphics3D extends PApplet {
 	
 	public static void main(String[] args) {
 		PApplet.main("CubeGraphics3D");
-		
 	}
 	
 	public void settings() {
@@ -142,7 +290,7 @@ public class CubeGraphics3D extends PApplet {
 	}
 	
 	public void setup() {
-		
+
 		cam = new PeasyCam(this, 600);
 		
 		int index = 0;
@@ -151,173 +299,347 @@ public class CubeGraphics3D extends PApplet {
 				for (int z=-1; z<2; z++) {
 					PMatrix3D matrix = new PMatrix3D();
 					matrix.translate(x, y, z);
-					cube[index] = new GraphicalCubie(matrix, x, y ,z);
+					cube[index] = new GraphicalCubie(matrix, x, y, z);
 					index++;
 				}
 			}
 		}
 	}
-//////////////////////////////////////////////// REFACTOR	
-	void turnZ(int index, int dir) {
-		for (int i=0; i<cube.length; i++) {
-			if (cube[i].z == index) {
-				PMatrix2D matrix = new PMatrix2D();
-				matrix.rotate(HALF_PI*dir);
-				matrix.translate(cube[i].x, cube[i].y);
-				cube[i].update(round(matrix.m02), round(matrix.m12), cube[i].z);
-				cube[i].turnFacesZ(dir);
-			}
-		}
-	}
 	
-	void turnY(int index, int dir) {
-		for (int i=0; i<cube.length; i++) {
-			if (cube[i].y == index) {
+	void turn(int index, int dir, int xyz) {
+		for (int i = 0; i < cube.length; i++) {
+			if ((cube[i].x == index && xyz == 0) || (cube[i].y == index && xyz == 1) || (cube[i].z == index && xyz == 2)) {
 				PMatrix2D matrix = new PMatrix2D();
 				matrix.rotate(HALF_PI*dir);
-				matrix.translate(cube[i].x, cube[i].z);
-				cube[i].update(round(matrix.m02), cube[i].y, round(matrix.m12));
-				cube[i].turnFacesY(dir);
+				switch (xyz) {
+				case 0:
+					matrix.translate(cube[i].y, cube[i].z);
+					cube[i].update(cube[i].x, round(matrix.m02), round(matrix.m12));
+					break;
+				case 1:
+					matrix.translate(cube[i].x, cube[i].z);
+					cube[i].update(round(matrix.m02), cube[i].y, round(matrix.m12));
+					break;
+				case 2:
+					matrix.translate(cube[i].x, cube[i].y);
+					cube[i].update(round(matrix.m02), round(matrix.m12), cube[i].z);
+					break;
+				}
+				cube[i].turnFaces(dir, xyz);
 			}
 		}
 	}
-	
-	void turnX(int index, int dir) {
-		for (int i=0; i<cube.length; i++) {
-			if (cube[i].x == index) {
-				PMatrix2D matrix = new PMatrix2D();
-				matrix.rotate(HALF_PI*dir);
-				matrix.translate(cube[i].y, cube[i].z);
-				cube[i].update(cube[i].x, round(matrix.m02), round(matrix.m12));
-				cube[i].turnFacesX(dir);
-			}
-		}
-	}
-//////////////////////////////////////////////
+
 	public void draw() {
 		if (m != null) {
 			m.update();
 			if (solving && !m.animating) {
 				if (!movesToDo.isEmpty()) {
-					String move = movesToDo.removeFirst();
-					LinkedList<String> temp = new LinkedList<String>();
-					
-					switch (move) {
-					case "R":
-						shift = 1;
-						m = new Move(1, 0, 0, 1);
-						m.start();
-						break;
-					case "L":
-						shift = 1;
-						m = new Move(-1, 0, 0, -1);
-						m.start();
-						break;
-					case "F":
-						shift = 1;
-						m = new Move(0, 0, 1, 1);
-						m.start();
-						break;
-					case "B":
-						shift = 1;
-						m = new Move(0, 0, -1, -1);
-						m.start();
-						break;
-					case "U":
-						shift = 1;
-						m = new Move(0, -1, 0, 1);
-						m.start();
-						break;
-					case "D":
-						shift = 1;
-						m = new Move(0, 1, 0, -1);
-						m.start();
-						break;
-					case "R'":
-						shift = -1;
-						m = new Move(1, 0, 0, 1);
-						m.start();
-						break;
-					case "L'":
-						shift = -1;
-						m = new Move(-1, 0, 0, -1);
-						m.start();
-						break;
-					case "F'":
-						shift = -1;
-						m = new Move(0, 0, 1, 1);
-						m.start();
-						break;
-					case "B'":
-						shift = -1;
-						m = new Move(0, 0, -1, -1);
-						m.start();
-						break;
-					case "U'":
-						shift = -1;
-						m = new Move(0, -1, 0, 1);
-						m.start();
-						break;
-					case "D'":
-						shift = -1;
-						m = new Move(0, 1, 0, -1);
-						m.start();
-						break;
-					case "R2":
-						shift = 1;
-						m = new Move(1, 0, 0, 1);
-						m.start();
-						temp.add("R");
-						temp.addAll(movesToDo);
-						movesToDo = temp;
-						break;
-					case "L2":
-						shift = 1;
-						m = new Move(-1, 0, 0, -1);
-						m.start();
-						temp.add("L");
-						temp.addAll(movesToDo);
-						movesToDo = temp;
-						break;
-					case "F2":
-						shift = 1;
-						m = new Move(0, 0, 1, 1);
-						m.start();
-						temp.add("F");
-						temp.addAll(movesToDo);
-						movesToDo = temp;
-						break;
-					case "B2":
-						shift = 1;
-						m = new Move(0, 0, -1, -1);
-						m.start();
-						temp.add("B");
-						temp.addAll(movesToDo);
-						movesToDo = temp;
-						break;
-					case "U2":
-						shift = 1;
-						m = new Move(0, -1, 0, 1);
-						m.start();
-						temp.add("U");
-						temp.addAll(movesToDo);
-						movesToDo = temp;
-						break;
-					case "D2":
-						shift = 1;
-						m = new Move(0, 1, 0, -1);
-						m.start();
-						temp.add("D");
-						temp.addAll(movesToDo);
-						movesToDo = temp;
-						break;
+					if ((nextMove && displayingSolve) || !displayingSolve) {
+						String move = movesToDo.removeFirst();
+						LinkedList<String> temp = new LinkedList<String>();
+						
+						switch (move) {
+						case "R":
+							shift = 1;
+							m = new Move(1, 0, 0, 1);
+							m.start();
+							break;
+						case "L":
+							shift = 1;
+							m = new Move(-1, 0, 0, -1);
+							m.start();
+							break;
+						case "F":
+							shift = 1;
+							m = new Move(0, 0, 1, 1);
+							m.start();
+							break;
+						case "B":
+							shift = 1;
+							m = new Move(0, 0, -1, -1);
+							m.start();
+							break;
+						case "U":
+							shift = 1;
+							m = new Move(0, -1, 0, 1);
+							m.start();
+							break;
+						case "D":
+							shift = 1;
+							m = new Move(0, 1, 0, -1);
+							m.start();
+							break;
+						case "R'":
+							shift = -1;
+							m = new Move(1, 0, 0, 1);
+							m.start();
+							break;
+						case "L'":
+							shift = -1;
+							m = new Move(-1, 0, 0, -1);
+							m.start();
+							break;
+						case "F'":
+							shift = -1;
+							m = new Move(0, 0, 1, 1);
+							m.start();
+							break;
+						case "B'":
+							shift = -1;
+							m = new Move(0, 0, -1, -1);
+							m.start();
+							break;
+						case "U'":
+							shift = -1;
+							m = new Move(0, -1, 0, 1);
+							m.start();
+							break;
+						case "D'":
+							shift = -1;
+							m = new Move(0, 1, 0, -1);
+							m.start();
+							break;
+						case "R2":
+							shift = 1;
+							m = new Move(1, 0, 0, 1);
+							m.start();
+							temp.add("R");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "L2":
+							shift = 1;
+							m = new Move(-1, 0, 0, -1);
+							m.start();
+							temp.add("L");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "F2":
+							shift = 1;
+							m = new Move(0, 0, 1, 1);
+							m.start();
+							temp.add("F");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "B2":
+							shift = 1;
+							m = new Move(0, 0, -1, -1);
+							m.start();
+							temp.add("B");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "U2":
+							shift = 1;
+							m = new Move(0, -1, 0, 1);
+							m.start();
+							temp.add("U");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "D2":
+							shift = 1;
+							m = new Move(0, 1, 0, -1);
+							m.start();
+							temp.add("D");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "r":
+							shift = 1;
+							tab = true;
+							m = new Move(1, 0, 0, 1);
+							m.start();
+							break;
+						case "l":
+							shift = 1;
+							tab = true;
+							m = new Move(-1, 0, 0, -1);
+							m.start();
+							break;
+						case "f":
+							shift = 1;
+							tab = true;
+							m = new Move(0, 0, 1, 1);
+							m.start();
+							break;
+						case "b":
+							shift = 1;
+							tab = true;
+							m = new Move(0, 0, -1, -1);
+							m.start();
+							break;
+						case "u":
+							shift = 1;
+							tab = true;
+							m = new Move(0, -1, 0, 1);
+							m.start();
+							break;
+						case "d":
+							shift = 1;
+							tab = true;
+							m = new Move(0, 1, 0, -1);
+							m.start();
+							break;
+						case "r'":
+							shift = -1;
+							tab = true;
+							m = new Move(1, 0, 0, 1);
+							m.start();
+							break;
+						case "l'":
+							shift = -1;
+							tab = true;
+							m = new Move(-1, 0, 0, -1);
+							m.start();
+							break;
+						case "f'":
+							shift = -1;
+							tab = true;
+							m = new Move(0, 0, 1, 1);
+							m.start();
+							break;
+						case "b'":
+							shift = -1;
+							tab = true;
+							m = new Move(0, 0, -1, -1);
+							m.start();
+							break;
+						case "u'":
+							shift = -1;
+							tab = true;
+							m = new Move(0, -1, 0, 1);
+							m.start();
+							break;
+						case "d'":
+							shift = -1;
+							tab = true;
+							m = new Move(0, 1, 0, -1);
+							m.start();
+							break;
+						case "r2":
+							shift = 1;
+							tab = true;
+							m = new Move(1, 0, 0, 1);
+							m.start();
+							temp.add("r");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "l2":
+							shift = 1;
+							tab = true;
+							m = new Move(-1, 0, 0, -1);
+							m.start();
+							temp.add("l");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "f2":
+							shift = 1;
+							tab = true;
+							m = new Move(0, 0, 1, 1);
+							m.start();
+							temp.add("f");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "b2":
+							shift = 1;
+							tab = true;
+							m = new Move(0, 0, -1, -1);
+							m.start();
+							temp.add("b");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "u2":
+							shift = 1;
+							tab = true;
+							m = new Move(0, -1, 0, 1);
+							m.start();
+							temp.add("u");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "d2":
+							shift = 1;
+							tab = true;
+							m = new Move(0, 1, 0, -1);
+							m.start();
+							temp.add("d");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "e":
+							shift = 1;
+							m = new Move(0, 2, 0, -1);
+							m.start();
+							break;
+						case "m":
+							shift = 1;
+							m = new Move(2, 0, 0, -1);
+							m.start();
+							break;
+						case "s":
+							shift = 1;
+							m = new Move(0, 0, 2, 1);
+							m.start();
+							break;
+						case "e'":
+							shift = -1;
+							m = new Move(0, 2, 0, -1);
+							m.start();
+							break;
+						case "m'":
+							shift = -1;
+							m = new Move(2, 0, 0, -1);
+							m.start();
+							break;
+						case "s'":
+							shift = -1;
+							m = new Move(0, 0, 2, 1);
+							m.start();
+							break;
+						case "e2":
+							shift = 1;
+							m = new Move(0, 2, 0, -1);
+							m.start();
+							temp.add("e");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "m2":
+							shift = 1;
+							m = new Move(2, 0, 0, -1);
+							m.start();
+							temp.add("m");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						case "s2":
+							shift = 1;
+							m = new Move(0, 0, 2, 1);
+							m.start();
+							temp.add("s");
+							temp.addAll(movesToDo);
+							movesToDo = temp;
+							break;
+						}
+						nextMove = false;
 					}
-				} else
+				} else {
 					solving = false;
+					displayingSolve = false;
+					nextMove = false;
+				}
 			}
 		}
 		
-		background(200);
+		background(50);
 		scale(60);
 		for (int i=0; i<cube.length; i++) {
 			push();
@@ -342,7 +664,7 @@ public class CubeGraphics3D extends PApplet {
 	}
 	
 	public void keyPressed() {
-		if ((m == null || !m.animating) && !solving) {
+		if ((m == null || !m.animating) && (!solving || displayingSolve)) {
 			if (key == CODED) {
 				if (keyCode == SHIFT)
 					shift *= -1;
@@ -351,18 +673,37 @@ public class CubeGraphics3D extends PApplet {
 				
 				switch (key) {
 				case ' ':
+					if (displayingSolve) {
+						nextMove = true;
+						break;
+					}
 					CubeIndexModel ci = new CubeIndexModel();
+					boolean bad = false;
 					for (String move : movesDone) {
+						if (Character.isLowerCase(move.charAt(0))) {
+							System.out.println("Error - solver cannot be used with middle slice moves.");
+							bad = true;
+							break;
+						}
 						ci.doMove(move);
 					}
-					movesDone = cleanSolve(movesDone);
-					System.out.println(movesDone.toString());
-					System.out.println(movesDone.size());
-					tab = false;
-					movesToDo = solve(ci);
-					movesDone = new LinkedList<String>();
-					if (movesToDo.size() > 0)
+					if (!bad) {
+						movesDone = cleanSolve(movesDone);
+						System.out.println(movesDone.toString());
+						System.out.println(movesDone.size());
+						tab = false;
+						movesToDo = solve(ci);
+						movesDone = new LinkedList<String>();
+						if (movesToDo.size() > 0) {
+							solving = true;
+							displayingSolve = true;
+							nextMove = true;
+						}
+					} else {
+						movesToDo = reverseAndClean(movesDone);
 						solving = true;
+						movesDone = new LinkedList<String>();
+					}
 					break;
 				case TAB:
 					tab ^= true;
@@ -502,25 +843,22 @@ public class CubeGraphics3D extends PApplet {
 			this.y = y;
 			this.z = z;
 		}
-		///////////////////////////////// REFACTOR
-		void turnFacesX(int dir) {
-			for (Face f : faces) {
-				f.turnX(HALF_PI*dir);
-			}
-		}
 		
-		void turnFacesY(int dir) {
+		void turnFaces(int dir, int xyz) {
 			for (Face f : faces) {
-				f.turnY(HALF_PI*dir);
+				switch (xyz) {
+				case 0:
+					f.turn(HALF_PI*dir, xyz);
+					break;
+				case 1:
+					f.turn(HALF_PI*dir, xyz);
+					break;
+				case 2:
+					f.turn(HALF_PI*dir, xyz);
+					break;
+				}
 			}
 		}
-		
-		void turnFacesZ(int dir) {
-			for (Face f : faces) {
-				f.turnZ(HALF_PI*dir);
-			}
-		}
-///////////////////////////////// 
 		void show() {
 			noFill();
 			stroke(0);
@@ -542,31 +880,29 @@ public class CubeGraphics3D extends PApplet {
 			this.normal = normal;
 			this.c = c;
 		}
-///////////////////////////////// REFACTOR
-		void turnZ(float angle) {
+		
+		void turn(float angle, int xyz) {
 			PVector v2 = new PVector();
-			v2.x = round(normal.x * cos(angle) - normal.y * sin(angle));
-			v2.y = round(normal.x * sin(angle) + normal.y * cos(angle));
-			v2.z = round(normal.z);
+			switch (xyz) {
+			case 0:
+				v2.y = round(normal.y * cos(angle) - normal.z * sin(angle));
+				v2.z = round(normal.y * sin(angle) + normal.z * cos(angle));
+				v2.x = round(normal.x);
+				break;
+			case 1:
+				v2.x = round(normal.x * cos(angle) - normal.z * sin(angle));
+				v2.z = round(normal.x * sin(angle) + normal.z * cos(angle));
+				v2.y = round(normal.y);
+				break;
+			case 2:
+				v2.x = round(normal.x * cos(angle) - normal.y * sin(angle));
+				v2.y = round(normal.x * sin(angle) + normal.y * cos(angle));
+				v2.z = round(normal.z);
+				break;
+			}
 			normal = v2;
 		}
 		
-		void turnY(float angle) {
-			PVector v2 = new PVector();
-			v2.x = round(normal.x * cos(angle) - normal.z * sin(angle));
-			v2.z = round(normal.x * sin(angle) + normal.z * cos(angle));
-			v2.y = round(normal.y);
-			normal = v2;
-		}
-		
-		void turnX(float angle) {
-			PVector v2 = new PVector();
-			v2.y = round(normal.y * cos(angle) - normal.z * sin(angle));
-			v2.z = round(normal.y * sin(angle) + normal.z * cos(angle));
-			v2.x = round(normal.x);
-			normal = v2;
-		}
-/////////////////////////////////
 		void show() {
 			fill(c[0], c[1], c[2]);
 			rectMode(CENTER);
@@ -610,27 +946,27 @@ public class CubeGraphics3D extends PApplet {
 					animating = false;
 					if (abs(z) > 0) {
 						if (abs(z) > 1) {
-							turnZ(0, shiftCoeff*shift);
+							turn(0, shiftCoeff*shift, 2);
 						} else {
-							turnZ(z, shiftCoeff*shift);
+							turn(z, shiftCoeff*shift, 2);
 							if (tab)
-								turnZ(0, shiftCoeff*shift);
+								turn(0, shiftCoeff*shift, 2);
 						}
 					} else if (abs(x) > 0) {
 						if (abs(x) > 1) {
-							turnX(0, shiftCoeff*shift);
+							turn(0, shiftCoeff*shift, 0);
 						} else {
-							turnX(x, shiftCoeff*shift);
+							turn(x, shiftCoeff*shift, 0);
 							if (tab)
-								turnX(0, shiftCoeff*shift);
+								turn(0, shiftCoeff*shift, 0);
 						}
 					} else {
 						if (abs(y) > 1) {
-							turnY(0, shiftCoeff*shift);
+							turn(0, shiftCoeff*shift, 1);
 						} else {
-							turnY(y, shiftCoeff*shift);
+							turn(y, shiftCoeff*shift, 1);
 							if (tab)
-								turnY(0, shiftCoeff*shift);
+								turn(0, shiftCoeff*shift, 1);
 						}
 					}
 				}

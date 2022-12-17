@@ -1,4 +1,3 @@
-// Reference Ben Botto properly
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -51,27 +50,6 @@ public class CubeIndexModel {
 	};
 	
 	int[] bases = {90, 6, 1}; // {6C2*6C1*6C0, 6C1*6C0, 6C0}
-	
-	public static void main(String[] args) {
-		CubeIndexModel ci = new CubeIndexModel();
-		ci.F();
-		ci.R();
-		ci.L();
-		ci.B();
-		ci.U();
-		ci.D();
-		for (int i = 0; i < 8; i++) {
-			System.out.print(ci.corners[i].getPos());
-			System.out.print(", ");
-			System.out.println(ci.corners[i].getOrient());
-		}
-		System.out.println();
-		for (int i = 0; i < 12; i++) {
-			System.out.print(ci.edges[i].getPos());
-			System.out.print(", ");
-			System.out.println(ci.edges[i].getOrient());
-		}
-	}
 	
 	public CubeIndexModel() {
 		for (byte i = 0; i < 8; i++) {
@@ -239,6 +217,7 @@ public class CubeIndexModel {
 		Gson gson = new GsonBuilder().create();
 		String json = gson.toJson(distances);
 		FileWriter file = new FileWriter(filename);
+		// had to use buffered write to avoid write errors
 		BufferedWriter buffer = new BufferedWriter(file);
 		buffer.write(json);
 		buffer.close();
@@ -590,7 +569,7 @@ public class CubeIndexModel {
 		}
 		return 3*lehmer[0]+lehmer[1];
 	}
-///////////////////////////////// REFACTOR + ADD LAST MOVES
+
 	public final void U() {
 		Cubie temp = corners[ULF];
 		corners[ULF] = corners[URF];
@@ -625,14 +604,6 @@ public class CubeIndexModel {
 		
 		edges = swap(edges, UB, UF);
 		edges = swap(edges, UR, UL);
-	}
-	
-	public final void u() {
-		
-	}
-	
-	public final void uPrime() {
-		
 	}
 	
 	public final void L() {
@@ -679,14 +650,6 @@ public class CubeIndexModel {
 		
 		edges = swap(edges, BL, FL);
 		edges = swap(edges, UL, DL);
-	}
-	
-	public final void l() {
-		
-	}
-	
-	public final void lPrime() {
-		
 	}
 	
 	public final void F() {
@@ -745,14 +708,6 @@ public class CubeIndexModel {
 		edges = swap(edges, FL, FR);
 	}
 	
-	public final void f() {
-		
-	}
-	
-	public final void fPrime() {
-		
-	}
-	
 	public final void R() {
 		Cubie temp = corners[DRB];
 		corners[DRB] = corners[URB];
@@ -797,14 +752,6 @@ public class CubeIndexModel {
 		
 		edges = swap(edges, BR, FR);
 		edges = swap(edges, UR, DR);
-	}
-	
-	public final void r() {
-		
-	}
-	
-	public final void rPrime() {
-		
 	}
 	
 	public final void B() {
@@ -862,15 +809,7 @@ public class CubeIndexModel {
 		edges = swap(edges, UB, DB);
 		edges = swap(edges, BL, BR);
 	}
-	
-	public final void b() {
-		
-	}
-	
-	public final void bPrime() {
-		
-	}
-	
+
 	public final void D() {
 		Cubie temp = corners[DLB];
 		corners[DLB] = corners[DRB];
@@ -907,47 +846,4 @@ public class CubeIndexModel {
 		edges = swap(edges, DR, DL);
 	}
 	
-	public final void d() {
-		
-	}
-	
-	public final void dPrime() {
-		
-	}
-	
-	public final void m() {
-		
-	}
-	
-	public final void mPrime() {
-		
-	}
-	
-	public final void m2() {
-		
-	}
-	
-	public final void e() {
-		
-	}
-	
-	public final void ePrime() {
-		
-	}
-	
-	public final void e2() {
-		
-	}
-	
-	public final void s() {
-		
-	}
-	
-	public final void sPrime() {
-		
-	}
-	
-	public final void s2() {
-		
-	}
 }

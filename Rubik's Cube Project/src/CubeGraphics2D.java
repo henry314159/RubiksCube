@@ -1,3 +1,4 @@
+// make so tells u if u put it in wrong and no solve is found
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Arrays;
@@ -6,8 +7,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import processing.core.*;
-
-// REFACTOR
 
 public class CubeGraphics2D extends PApplet {
 	
@@ -52,7 +51,6 @@ public class CubeGraphics2D extends PApplet {
 	
 	public static void main(String[] args) {
 		PApplet.main("CubeGraphics2D");
-		
 	}
 	
 	public void settings() {
@@ -67,14 +65,19 @@ public class CubeGraphics2D extends PApplet {
 		Square[] s4 = new Square[9];
 		Square[] s5 = new Square[9];
 		
+		boolean centre = false;
+		
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				s0[i*3+j] = new Square(j*squareSideLength, i*squareSideLength, squareSideLength, 0);
-				s1[i*3+j] = new Square(j*squareSideLength, i*squareSideLength, squareSideLength, 1);
-				s2[i*3+j] = new Square(j*squareSideLength, i*squareSideLength, squareSideLength, 2);
-				s3[i*3+j] = new Square(j*squareSideLength, i*squareSideLength, squareSideLength, 3);
-				s4[i*3+j] = new Square(j*squareSideLength, i*squareSideLength, squareSideLength, 4);
-				s5[i*3+j] = new Square(j*squareSideLength, i*squareSideLength, squareSideLength, 5);
+				if (i == 1 && j == 1)
+					centre = true;
+				s0[i*3+j] = new Square(j*squareSideLength, i*squareSideLength, squareSideLength, 0, centre);
+				s1[i*3+j] = new Square(j*squareSideLength, i*squareSideLength, squareSideLength, 1, centre);
+				s2[i*3+j] = new Square(j*squareSideLength, i*squareSideLength, squareSideLength, 2, centre);
+				s3[i*3+j] = new Square(j*squareSideLength, i*squareSideLength, squareSideLength, 3, centre);
+				s4[i*3+j] = new Square(j*squareSideLength, i*squareSideLength, squareSideLength, 4, centre);
+				s5[i*3+j] = new Square(j*squareSideLength, i*squareSideLength, squareSideLength, 5, centre);
+				centre = false;
 			}
 		}
 		
@@ -98,7 +101,8 @@ public class CubeGraphics2D extends PApplet {
 				int squareY = s.y + f.y;
 				
 				if (((squareX < mouseX) && (mouseX < squareX + squareSideLength)) &&
-					((squareY < mouseY) && (mouseY < squareY + squareSideLength))) {
+					((squareY < mouseY) && (mouseY < squareY + squareSideLength)) &&
+					!s.centre) {
 					s.colour = (s.colour + 1) % 6;
 				}
 			}
@@ -144,6 +148,8 @@ public class CubeGraphics2D extends PApplet {
 			for (String move : phase4Solve) {
 				solve.add(move);
 			}
+			
+			solve = cleanSolve(solve);
 						
 			System.out.println(solve.toString());
 			System.out.println(solve.size());
@@ -152,53 +158,63 @@ public class CubeGraphics2D extends PApplet {
 		} catch (JsonSyntaxException | JsonIOException | FileNotFoundException e) {
 			e.printStackTrace();
 		}
-//		int[][] edgeColours = new int[12][2];
-//		edgeColours[0] = new int[] {faceArray[2].squareArray[1].colour, faceArray[1].squareArray[7].colour}; // UB
-//		edgeColours[1] = new int[] {faceArray[2].squareArray[5].colour, faceArray[4].squareArray[3].colour}; // UR
-//		edgeColours[2] = new int[] {faceArray[2].squareArray[7].colour, faceArray[3].squareArray[1].colour}; // UF
-//		edgeColours[3] = new int[] {faceArray[2].squareArray[3].colour, faceArray[0].squareArray[5].colour}; // UL
-//		edgeColours[4] = new int[] {faceArray[3].squareArray[5].colour, faceArray[4].squareArray[7].colour}; // FR
-//		edgeColours[5] = new int[] {faceArray[3].squareArray[3].colour, faceArray[0].squareArray[7].colour}; // FL
-//		edgeColours[6] = new int[] {faceArray[1].squareArray[3].colour, faceArray[0].squareArray[1].colour}; // BL
-//		edgeColours[7] = new int[] {faceArray[1].squareArray[5].colour, faceArray[4].squareArray[1].colour}; // BR
-//		edgeColours[8] = new int[] {faceArray[5].squareArray[7].colour, faceArray[3].squareArray[7].colour}; // DF
-//		edgeColours[9] = new int[] {faceArray[5].squareArray[5].colour, faceArray[0].squareArray[3].colour}; // DL
-//		edgeColours[10] = new int[] {faceArray[5].squareArray[1].colour, faceArray[1].squareArray[1].colour}; // DB
-//		edgeColours[11] = new int[] {faceArray[5].squareArray[3].colour, faceArray[4].squareArray[5].colour}; // DR
-//		
-//		for (int[] e : edgeColours)
-//			System.out.println(Arrays.toString(e));
-//		int i = 0;
-//		for (int[] edge : edgeColours) {
-//			System.out.print(getEdgePosition(Arrays.copyOf(edge, edge.length)));
-//			System.out.print(", ");
-//			System.out.print(getEdgeOrientation(Arrays.copyOf(edge, edge.length), i));
-//			System.out.println();
-//			i ++;
-//		}
-//		System.out.println();
-//		
-//		int[][] cornerColours = new int[8][3];
-//		cornerColours[0] = new int[] {faceArray[2].squareArray[0].colour, faceArray[0].squareArray[2].colour, faceArray[1].squareArray[6].colour}; // ULB
-//		cornerColours[1] = new int[] {faceArray[2].squareArray[2].colour, faceArray[4].squareArray[0].colour, faceArray[1].squareArray[8].colour}; // URB
-//		cornerColours[2] = new int[] {faceArray[2].squareArray[8].colour, faceArray[4].squareArray[6].colour, faceArray[3].squareArray[2].colour}; // URF
-//		cornerColours[3] = new int[] {faceArray[2].squareArray[6].colour, faceArray[0].squareArray[8].colour, faceArray[3].squareArray[0].colour}; // ULF
-//		cornerColours[4] = new int[] {faceArray[5].squareArray[8].colour, faceArray[0].squareArray[6].colour, faceArray[3].squareArray[6].colour}; // DLF
-//		cornerColours[5] = new int[] {faceArray[5].squareArray[2].colour, faceArray[0].squareArray[0].colour, faceArray[1].squareArray[0].colour}; // DLB
-//		cornerColours[6] = new int[] {faceArray[5].squareArray[0].colour, faceArray[4].squareArray[2].colour, faceArray[1].squareArray[2].colour}; // DRB
-//		cornerColours[7] = new int[] {faceArray[5].squareArray[6].colour, faceArray[4].squareArray[8].colour, faceArray[3].squareArray[8].colour}; // DRF
-//		
-//		for (int[] c : cornerColours)
-//			System.out.println(Arrays.toString(c));
-//		i = 0;
-//		for (int[] corner : cornerColours) {
-//			System.out.print(getCornerPosition(Arrays.copyOf(corner, corner.length)));
-//			System.out.print(", ");
-//			System.out.print(getCornerOrientation(Arrays.copyOf(corner, corner.length), i));
-//			System.out.println();
-//			i ++;
-//		}
-//		System.out.println();
+	}
+	
+	private static LinkedList<String> cleanSolve(LinkedList<String> solve) {
+		if (solve.size() == 0) {
+			return solve;
+		}
+		LinkedList<String> clean = new LinkedList<String>();
+		String lastItem = solve.removeFirst();
+		clean.add(lastItem);
+		for (String item : solve) {
+			String cleanItem = item;
+			if (item.startsWith(""+lastItem.charAt(0))) {
+				if (item.length() == lastItem.length()) {
+					if (item.length() == 1) {
+						cleanItem = item.charAt(0) + "2";
+					} else {
+						if (item.endsWith("'") && lastItem.endsWith("'")) {
+							cleanItem = item.charAt(0) + "2";
+						} else if ((item.endsWith("'") && lastItem.endsWith("2")) || (item.endsWith("2") && lastItem.endsWith("'"))) {
+							cleanItem = ""+item.charAt(0);
+						} else {
+							cleanItem = null;
+						}
+					}
+				} else {
+					if (item.length() < lastItem.length()) {
+						if (lastItem.endsWith("2")) {
+							cleanItem = item.charAt(0) + "'";
+						} else {
+							cleanItem = null;
+						}
+					} else {
+						if (item.endsWith("2")) {
+							cleanItem = item.charAt(0) + "'";
+						} else {
+							cleanItem = null;
+						}
+					}
+				}
+			}
+			lastItem = cleanItem;
+			if (cleanItem == item) {
+				clean.add(cleanItem);
+			} else {
+				clean.removeLast();
+				if (cleanItem != null) {
+					clean.add(cleanItem);
+				} else {
+					if (clean.size() != 0) {
+						lastItem = clean.getLast();
+					} else {
+						lastItem = " ";
+					}
+				}
+			}
+		}
+		return clean;
 	}
 	
 	public Cubie[][] getCube() {
@@ -461,12 +477,14 @@ public class CubeGraphics2D extends PApplet {
 		int y;
 		int sideLength;
 		int colour;
+		boolean centre;
 		
-		Square(int x, int y, int sideLength, int colour) {
+		Square(int x, int y, int sideLength, int colour, boolean centre) {
 			this.x = x;
 			this.y = y;
 			this.sideLength = sideLength;
 			this.colour = colour;
+			this.centre = centre;
 		}
 		
 		void show() {
