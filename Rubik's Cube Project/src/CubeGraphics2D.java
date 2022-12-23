@@ -12,7 +12,14 @@ public class CubeGraphics2D extends PApplet {
 	
 	Face[] faceArray = new Face[6];
 	
+	PFont f;
+	
 	int squareSideLength = 50;
+	
+	String[][] data1;
+	String[][] data2;
+	String[][] data3;
+	String[][] data4;
 	
 	int[][] colours = {
 			{255, 255, 0}, // left
@@ -23,7 +30,7 @@ public class CubeGraphics2D extends PApplet {
 			{0, 0, 255} // down
 	};
 	
-	int[][] orderedCorners = new int[][] {
+	int[][] orderedCorners = new int[][] { // stores the correct order and permutation of the corner colours for a solved cube
 		{0, 1, 2},
 		{1, 2, 4},
 		{2, 3, 4},
@@ -34,7 +41,7 @@ public class CubeGraphics2D extends PApplet {
 		{3, 4, 5}
 	};
 	
-	int[][] orderedEdges = new int[][] {
+	int[][] orderedEdges = new int[][] { // stores the correct order and permutation of the edge colours for a solved cube
 		{1, 2},
 		{2, 4},
 		{2, 3},
@@ -53,11 +60,25 @@ public class CubeGraphics2D extends PApplet {
 		PApplet.main("CubeGraphics2D");
 	}
 	
+	public CubeGraphics2D() throws JsonSyntaxException, JsonIOException, FileNotFoundException {
+		// Same as in CubeGraphics3D
+		
+		Gson gson = new Gson();
+		data1 = gson.fromJson(new FileReader("thistlethwaiteG0-G1.json"), String[][].class);
+		data2 = gson.fromJson(new FileReader("thistlethwaiteG1-G2.json"), String[][].class);
+		data3 = gson.fromJson(new FileReader("thistlethwaiteG2-G3.json"), String[][].class);
+		data4 = gson.fromJson(new FileReader("thistlethwaiteG3-G4.json"), String[][].class);
+	}
+	
 	public void settings() {
 		this.size(600, 450);
 	}
 	
 	public void setup() {
+		// Initialise the cube to be shown on screen
+		
+		f = createFont("Arial", 16, true);
+		
 		Square[] s0 = new Square[9];
 		Square[] s1 = new Square[9];
 		Square[] s2 = new Square[9];
@@ -95,6 +116,9 @@ public class CubeGraphics2D extends PApplet {
 	}
 	
 	public void mouseClicked() {
+		// Determine where the cursor was when the user clicked, if it was over
+		// a valid square, the colour of that square will be changed.
+		
 		for (Face f : faceArray) {
 			for (Square s : f.squareArray) {
 				int squareX = s.x + f.x;
@@ -110,57 +134,50 @@ public class CubeGraphics2D extends PApplet {
 	}
 	
 	public void keyPressed() {
+		// The cube is solved as in CubeGraphics3D
 		
-		Gson gson = new Gson();
 		Cubie[][] cube = getCube();
 		CubeIndexModel ci = new CubeIndexModel(cube[0], cube[1]);
 		
-		try {
-			String[][] data1 = gson.fromJson(new FileReader("thistlethwaiteG0-G1.json"), String[][].class);
-			String[][] data2 = gson.fromJson(new FileReader("thistlethwaiteG1-G2.json"), String[][].class);
-			String[][] data3 = gson.fromJson(new FileReader("thistlethwaiteG2-G3.json"), String[][].class);
-			String[][] data4 = gson.fromJson(new FileReader("thistlethwaiteG3-G4.json"), String[][].class);
-			LinkedList<String> solve = new LinkedList<String>();
-			
-			String[] phase1Solve = data1[ci.getIndex0()];
-			
-			for (String move : phase1Solve) {
-				ci.doMove(move);
-				solve.add(move);
-			}
-			
-			String[] phase2Solve = data2[ci.getIndex1()];
-			
-			for (String move : phase2Solve) {
-				ci.doMove(move);
-				solve.add(move);
-			}
-			
-			String[] phase3Solve = data3[ci.getIndex2()];
-			
-			for (String move : phase3Solve) {
-				ci.doMove(move);
-				solve.add(move);
-			}
-
-			String[] phase4Solve = data4[ci.getIndex3()];
-			
-			for (String move : phase4Solve) {
-				solve.add(move);
-			}
-			
-			solve = cleanSolve(solve);
-						
-			System.out.println(solve.toString());
-			System.out.println(solve.size());
-			System.out.println();
-			
-		} catch (JsonSyntaxException | JsonIOException | FileNotFoundException e) {
-			e.printStackTrace();
+		LinkedList<String> solve = new LinkedList<String>();
+		
+		String[] phase1Solve = data1[ci.getIndex0()];
+		
+		for (String move : phase1Solve) {
+			ci.doMove(move);
+			solve.add(move);
 		}
+		
+		String[] phase2Solve = data2[ci.getIndex1()];
+		
+		for (String move : phase2Solve) {
+			ci.doMove(move);
+			solve.add(move);
+		}
+		
+		String[] phase3Solve = data3[ci.getIndex2()];
+		
+		for (String move : phase3Solve) {
+			ci.doMove(move);
+			solve.add(move);
+		}
+
+		String[] phase4Solve = data4[ci.getIndex3()];
+		
+		for (String move : phase4Solve) {
+			solve.add(move);
+		}
+		
+		solve = cleanSolve(solve);
+					
+		System.out.println(solve.toString());
+		System.out.println(solve.size());
+		System.out.println();
 	}
 	
 	private static LinkedList<String> cleanSolve(LinkedList<String> solve) {
+		// Same as in CubeGraphics3D
+		
 		if (solve.size() == 0) {
 			return solve;
 		}
@@ -218,6 +235,8 @@ public class CubeGraphics2D extends PApplet {
 	}
 	
 	public Cubie[][] getCube() {
+		// Converts the colours of the cube on the 2D GUI into a format useable by the CubeIndexModel class
+		
 		Cubie[][] cube = new Cubie[2][];
 		cube[0] = new Cubie[8];
 		cube[1] = new Cubie[12];
@@ -262,6 +281,8 @@ public class CubeGraphics2D extends PApplet {
 	}
 	
 	private byte getCornerPosition(int[] corner) {
+		// Finds original corner position on a solved cube
+		
 		Arrays.sort(corner);
 		for (byte i = 0; i < 8; i++) {
 			if (Arrays.equals(corner, orderedCorners[i])) {
@@ -273,6 +294,8 @@ public class CubeGraphics2D extends PApplet {
 	}
 	
 	private byte getCornerOrientation(int[] corner, int pos) {
+		// Tests all possible positions and a corner could be in to find its orientation relative to its solved state
+		
 		if (corner[0] == 2 || corner[0] == 5) {
 			return 0;
 		}
@@ -384,6 +407,8 @@ public class CubeGraphics2D extends PApplet {
 	}
 	
 	private byte getEdgePosition(int[] edge) {
+		// Finds original edge position on a solved cube
+		
 		Arrays.sort(edge);
 		for (byte i = 0; i < 12; i++) {
 			if (Arrays.equals(edge, orderedEdges[i])) {
@@ -395,6 +420,8 @@ public class CubeGraphics2D extends PApplet {
 	}
 	
 	private byte getEdgeOrientation(int[] edge, int pos) {
+		// Tests all possible positions and an edge could be in to find its orientation relative to its solved state
+		
 		int homePos = getEdgePosition(Arrays.copyOf(edge, 2));
 		
 		if (homePos == 0) {
@@ -473,6 +500,8 @@ public class CubeGraphics2D extends PApplet {
 	}
 	
 	class Square {
+		// An individual cubie face
+		
 		int x;
 		int y;
 		int sideLength;
@@ -497,6 +526,8 @@ public class CubeGraphics2D extends PApplet {
 	}
 	
 	class Face {
+		// A collection of nine 'Square's making a complete face of a Rubiks cube
+		
 		int x;
 		int y;
 		Square[] squareArray;

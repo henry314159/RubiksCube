@@ -9,8 +9,12 @@ import com.google.gson.JsonSyntaxException;
 import peasy.*;
 
 public class CubeGraphics3D extends PApplet {
+	// CubeGraphics3D handles the 3D GUI
+	
 	PeasyCam cam;
 	GraphicalCubie[] cube = new GraphicalCubie[27];
+	
+	PFont f;
 	
 	boolean solving = false;
 	boolean displayingSolve = false;
@@ -30,6 +34,10 @@ public class CubeGraphics3D extends PApplet {
 	String[][] data4;
 	
 	public CubeGraphics3D() throws JsonSyntaxException, JsonIOException, FileNotFoundException {
+		// Loads the four Thistlethwaite lookup tables, this is done whenever an instance of
+		// CubeGraphics3D is created so that it happens only once, which is faster than loading
+		// the tables every time the user wants to solve the cube.
+		
 		Gson gson = new Gson();
 		data1 = gson.fromJson(new FileReader("thistlethwaiteG0-G1.json"), String[][].class);
 		data2 = gson.fromJson(new FileReader("thistlethwaiteG1-G2.json"), String[][].class);
@@ -38,6 +46,10 @@ public class CubeGraphics3D extends PApplet {
 	}
 	
 	private final static LinkedList<String> reverseAndClean(LinkedList<String> lls_) {
+		// The input lls_ is a linked list containing moves written in Rubiks cube notation.
+		// The output is the logical inverse of the inputted sequence of moves, i.e., performing
+		// the input then the output in succession will leave the cube in its starting state.
+		
 		LinkedList<String> lls = new LinkedList<String>();
 		lls.addAll(lls_);
 		LinkedList<String> out = new LinkedList<String>();
@@ -186,6 +198,11 @@ public class CubeGraphics3D extends PApplet {
 	}
 	
 	public LinkedList<String> solve(CubeIndexModel ci) {
+		// Input is an instance of CubeIndexModel that the user wishes to be solved.
+		// The solving works by using the calculated indices to access the lookup tables
+		// loaded when CubeGraphics3D is started.
+		// Output is a sequence of moves that will return the input to its solved state.
+		
 		LinkedList<String> solve = new LinkedList<String>();
 		
 		String[] phase1Solve = data1[ci.getIndex0()];
@@ -225,6 +242,11 @@ public class CubeGraphics3D extends PApplet {
 	}
 	
 	private static LinkedList<String> cleanSolve(LinkedList<String> solve) {
+		// Input is a linked list of Rubiks cube notation moves.
+		// cleanSolve gets rid of successive moves that negate one another,
+		// e.g. "R" and "R'", cleanSolve also adds successive moves that make
+		// double moves, e.g. "R" and "R" make "R2".
+		
 		if (solve.size() == 0) {
 			return solve;
 		}
@@ -290,6 +312,10 @@ public class CubeGraphics3D extends PApplet {
 	}
 	
 	public void setup() {
+		// Initialises the 27 individual cubies to be rendered and stores
+		// them in 'cube'.
+		
+		f = createFont("Arial", 16, true);
 
 		cam = new PeasyCam(this, 600);
 		
@@ -307,6 +333,8 @@ public class CubeGraphics3D extends PApplet {
 	}
 	
 	void turn(int index, int dir, int xyz) {
+		// Turns the face at 'index' in the direction 'dir' in the 'xyz' plane
+		
 		for (int i = 0; i < cube.length; i++) {
 			if ((cube[i].x == index && xyz == 0) || (cube[i].y == index && xyz == 1) || (cube[i].z == index && xyz == 2)) {
 				PMatrix2D matrix = new PMatrix2D();
@@ -331,12 +359,25 @@ public class CubeGraphics3D extends PApplet {
 	}
 
 	public void draw() {
+		// Processing runs this function every frame, it handles moves that need to be animated and
+		// starts moves in the move queue 'movesToDo' if no other moves are being done at the moment.
+		
+		background(50);
 		if (m != null) {
 			m.update();
 			if (solving && !m.animating) {
 				if (!movesToDo.isEmpty()) {
+					String move = movesToDo.getFirst();
+					if (displayingSolve) {
+						textFont(f, 60);
+						fill(150, 0, 0);
+						if (move.contains("2"))
+							text(move.charAt(0), width/4, height/4);
+						else
+							text(move, width/4, height/4);
+					}
 					if ((nextMove && displayingSolve) || !displayingSolve) {
-						String move = movesToDo.removeFirst();
+						movesToDo.removeFirst();
 						LinkedList<String> temp = new LinkedList<String>();
 						
 						switch (move) {
@@ -638,8 +679,7 @@ public class CubeGraphics3D extends PApplet {
 				}
 			}
 		}
-		
-		background(50);
+
 		scale(60);
 		for (int i=0; i<cube.length; i++) {
 			push();
@@ -664,6 +704,8 @@ public class CubeGraphics3D extends PApplet {
 	}
 	
 	public void keyPressed() {
+		// Runs whenever a key is pressed, checks nothing else is being animated, then addresses the user's key press.
+		
 		if ((m == null || !m.animating) && (!solving || displayingSolve)) {
 			if (key == CODED) {
 				if (keyCode == SHIFT)
@@ -782,6 +824,8 @@ public class CubeGraphics3D extends PApplet {
 	}
 	
 	class GraphicalCubie {
+		// One of the 27 little cubes that make up the Rubiks cube, each one is coloured on all faces 
+		
 		PMatrix3D matrix;
 		int x = 0;
 		int y = 0;
@@ -846,19 +890,10 @@ public class CubeGraphics3D extends PApplet {
 		
 		void turnFaces(int dir, int xyz) {
 			for (Face f : faces) {
-				switch (xyz) {
-				case 0:
 					f.turn(HALF_PI*dir, xyz);
-					break;
-				case 1:
-					f.turn(HALF_PI*dir, xyz);
-					break;
-				case 2:
-					f.turn(HALF_PI*dir, xyz);
-					break;
-				}
 			}
 		}
+		
 		void show() {
 			noFill();
 			stroke(0);
@@ -873,6 +908,8 @@ public class CubeGraphics3D extends PApplet {
 	}
 	
 	class Face {
+		// An individual face on a cubie
+		
 		PVector normal;
 		int[] c;
 		
@@ -920,6 +957,8 @@ public class CubeGraphics3D extends PApplet {
 	}
 	
 	class Move {
+		// A move to be animated
+		
 		float angle = 0;
 		int x = 0;
 		int y = 0;

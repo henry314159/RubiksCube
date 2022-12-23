@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class CubeIndexModel {
+	// Solves the cube: responsible for indexing calculations and lookup table generation
 	
 	byte ULB = 0;
 	byte URB = 1;
@@ -18,7 +19,7 @@ public class CubeIndexModel {
 	byte DRB = 6;
 	byte DRF = 7;
 	
-	Cubie[] corners = new Cubie[8];
+	Cubie[] corners = new Cubie[8]; // to store corner positions and their orientations
 	
 	byte UB = 0;
 	byte UR = 1;
@@ -33,7 +34,7 @@ public class CubeIndexModel {
 	byte DB = 10;
 	byte DR = 11;
 	
-	Cubie[] edges = new Cubie[12];
+	Cubie[] edges = new Cubie[12]; // to store edge positions and their orientations
 	
 	int[] choose2 = {0, 0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55};
 	int[] choose3 = {0, 0, 0, 1, 4, 10, 20, 35, 56, 84, 120, 165};
@@ -72,6 +73,8 @@ public class CubeIndexModel {
 	}
 	
 	public final void doMove(String m) {
+		// Takes a string move and does the move on the cube
+		
 		switch(m) {
 		case "R":
 			R();
@@ -131,6 +134,8 @@ public class CubeIndexModel {
 	}
 	
 	public static final void writeTable(int tableNum) throws IOException {
+		// BFS to generate lookup tables
+		
 		int tableSize;
 		String filename;
 		LinkedList<String> allowedMoves = new LinkedList<String>();
@@ -217,6 +222,7 @@ public class CubeIndexModel {
 		Gson gson = new GsonBuilder().create();
 		String json = gson.toJson(distances);
 		FileWriter file = new FileWriter(filename);
+		
 		// had to use buffered write to avoid write errors
 		BufferedWriter buffer = new BufferedWriter(file);
 		buffer.write(json);
@@ -224,6 +230,8 @@ public class CubeIndexModel {
 	}
 	
 	private final static String[] reverseAndClean(LinkedList<String> lls_) {
+		// Logically reverse the inputted sequence of Rubiks cube notation moves
+		
 		LinkedList<String> lls = new LinkedList<String>();
 		lls.addAll(lls_);
 		String[] out = new String[lls.size()];
@@ -308,6 +316,8 @@ public class CubeIndexModel {
 	}
 	
 	private final int getCornerOrientation() {
+		// Indexes the corner orientation
+		
 		int orient = 0;
 		int powerOfThree = 1;
 		
@@ -341,6 +351,9 @@ public class CubeIndexModel {
 	}
 
 	private final int getEdgePartialCombination() {
+		// As part of the second stage of Thistlethwaite, the middle slice edges are fixed in the middle layer
+		// so these 'interestingEdges' must be indexed by their position in the cube
+		
 		byte[] interestingEdges = new byte[4];
 		int index = 0;
 		for (int i = 0; i < 12 && index < 4; i++) {
@@ -355,6 +368,9 @@ public class CubeIndexModel {
 	}
 	
 	private final int getEdgeIndexM() {
+		// In the third stage of Thistlethwaite, the L and R slice edges are put in their respective slices, so accounting
+		// for the middle slice pieces (of the solved cube) and their positions allows us to index for this
+		
 		int[] edgeMap = new int[12];
 		
 		edgeMap[UB] = 0;
@@ -390,6 +406,9 @@ public class CubeIndexModel {
 	}
 	
 	private final int getParityIndex() {
+		// Checks if the parity of the cube is odd or even, an odd parity means an odd number of corner swaps
+		// has occurred, while an even parity means an even number of corner swaps has occurred.
+		
 		int parity = 0;
 		for (int i = 0; i < 8; i++) {
 			for (int j = i + 1; j < 8; j++) {
@@ -400,6 +419,9 @@ public class CubeIndexModel {
 	}
 	
 	private final int getTetradPairIndex() {
+		// Corners are in tetrad pairs defined immediately below, and these are indexed by looking at their positions
+		// relative to one another.
+		
 		int[][] tetradPairs = {
 			getTetradPair(ULB, URF),	
 			getTetradPair(DLF, DRB),
@@ -430,6 +452,9 @@ public class CubeIndexModel {
 	}
 	
 	private final int[] getTetradPair(int c1, int c2) {
+		// Input is two corners in a tetrad pair
+		// Output is the whereabouts of these two corners
+		
 		int[] tetradPair = new int[2];
 		int comboInd = 0;
 		
@@ -443,6 +468,8 @@ public class CubeIndexModel {
 	}
 	
 	public final int getIndex0() {
+		// Indexing for the first stage of Thistlethwaite
+		
 		int orient = 0;
 		int powerOfTwo = 1;
 		for (int i = 0; i < 11; i++) {
@@ -453,14 +480,20 @@ public class CubeIndexModel {
 	}
 	
 	public final int getIndex1() {
+		// Indexing for the second stage of Thistlethwaite
+		
 		return getCornerOrientation() + 2187*getEdgePartialCombination();
 	}
 	
 	public final int getIndex2() {
+		// Indexing for the third stage of Thistlethwaite
+		
 		return ((getEdgeIndexM()*2520)+getTetradPairIndex())*2+getParityIndex();
 	}
 	
 	public final int getIndex3() {
+		// Indexing for the fourth stage of Thistlethwaite
+		
 		int[] edgeMap = new int[12];
 		
 	    edgeMap[UB] = 0;
@@ -537,6 +570,8 @@ public class CubeIndexModel {
 	}
 	
 	private final int permIndex(int[] p) {
+		// Method of indexing permutations of length 4
+		
 		int[] lehmer = new int[4];
 		for (int i = 0; i < 4; i++) {
 			lehmer[i] = p[i];
@@ -554,6 +589,8 @@ public class CubeIndexModel {
 	}
 	
 	private final int partialPermIndex(int[] pp) {
+		// Method of indexing permutations of length 2
+		
 		int[] lehmer = new int[2];
 		for (int i = 0; i < 2; i++) {
 			lehmer[i] = pp[i];
@@ -570,6 +607,11 @@ public class CubeIndexModel {
 		return 3*lehmer[0]+lehmer[1];
 	}
 
+	// Below are the move functions
+	// Some moves affect corner and/or edge orientation and some do not,
+	// this is partially arbitrary as it depends on which sides of the cube Thistlethwaite's
+	// algorithm starts with first.
+	
 	public final void U() {
 		Cubie temp = corners[ULF];
 		corners[ULF] = corners[URF];

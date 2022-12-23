@@ -1,5 +1,8 @@
 
 public class Cubie {
+	// A custom data structure, not unlike Tuple2, however,
+	// Cubie is required because using general case custom data structures
+	// caused implementation issues to do with Java's tolerance for generalisation.
 	
 	private byte position;
 	private byte orientation;
