@@ -21,6 +21,11 @@ public class CubeGraphics2D extends PApplet {
 	String[][] data3;
 	String[][] data4;
 	
+	boolean displayingSolve = false;
+	
+	LinkedList<String> solve = new LinkedList<String>();
+	String showingMove = "";
+	
 	int[][] colours = {
 			{255, 255, 0}, // left
 			{255, 165, 0}, // back
@@ -78,6 +83,71 @@ public class CubeGraphics2D extends PApplet {
 		// Initialise the cube to be shown on screen
 		
 		f = createFont("Arial", 16, true);
+		newCube();
+	}
+	
+	public void draw() {
+		background(255);
+		
+		for (int i = 0; i < 6; i++)
+			faceArray[i].show();
+		
+		if (showingMove.length() > 2)
+			textFont(f, 20);
+		else
+			textFont(f, 60);
+		fill(150, 0, 0);
+		text(showingMove, width/2, 4*height/5);
+		
+		if (solve.isEmpty() && displayingSolve) {
+			newCube();
+		}
+	}
+	
+	public void mouseClicked() {
+		// Determine where the cursor was when the user clicked, if it was over
+		// a valid square, the colour of that square will be changed.
+		
+		for (Face f : faceArray) {
+			for (Square s : f.squareArray) {
+				int squareX = s.x + f.x;
+				int squareY = s.y + f.y;
+				
+				if (((squareX < mouseX) && (mouseX < squareX + squareSideLength)) &&
+					((squareY < mouseY) && (mouseY < squareY + squareSideLength)) &&
+					!s.centre) {
+					s.colour = (s.colour + 1) % 6;
+				}
+			}
+		}
+	}
+	
+	public void keyPressed() {
+		// Deals with key presses and validation of the solving process
+		
+		if (!displayingSolve) {
+			Cubie[][] cube = getCube();
+			CubeIndexModel c = new CubeIndexModel(cube[0], cube[1]);
+			try {
+				solve = solve(c);
+			} catch(ArrayIndexOutOfBoundsException e) {
+				showingMove = "Error - configuration not valid";
+			}
+			if (!solve.isEmpty()) {
+				showingMove = solve.removeFirst();
+				displayingSolve = true;
+			}
+		} else {
+			if (solve.isEmpty()) {
+				showingMove = "";
+				displayingSolve = false;
+			} else
+				showingMove = solve.removeFirst();
+		}
+	}
+	
+	public void newCube() {
+		// Generates a new cube net
 		
 		Square[] s0 = new Square[9];
 		Square[] s1 = new Square[9];
@@ -110,34 +180,11 @@ public class CubeGraphics2D extends PApplet {
 		faceArray[5] = new Face(squareSideLength*9, squareSideLength*3, s5);
 	}
 	
-	public void draw() {
-		for (int i = 0; i < 6; i++)
-			faceArray[i].show();
-	}
-	
-	public void mouseClicked() {
-		// Determine where the cursor was when the user clicked, if it was over
-		// a valid square, the colour of that square will be changed.
-		
-		for (Face f : faceArray) {
-			for (Square s : f.squareArray) {
-				int squareX = s.x + f.x;
-				int squareY = s.y + f.y;
-				
-				if (((squareX < mouseX) && (mouseX < squareX + squareSideLength)) &&
-					((squareY < mouseY) && (mouseY < squareY + squareSideLength)) &&
-					!s.centre) {
-					s.colour = (s.colour + 1) % 6;
-				}
-			}
-		}
-	}
-	
-	public void keyPressed() {
-		// The cube is solved as in CubeGraphics3D
-		
-		Cubie[][] cube = getCube();
-		CubeIndexModel ci = new CubeIndexModel(cube[0], cube[1]);
+	public LinkedList<String> solve(CubeIndexModel ci) {
+		// Input is an instance of CubeIndexModel that the user wishes to be solved.
+		// The solving works by using the calculated indices to access the lookup tables
+		// loaded when CubeGraphics3D is started.
+		// Output is a sequence of moves that will return the input to its solved state.
 		
 		LinkedList<String> solve = new LinkedList<String>();
 		
@@ -169,12 +216,14 @@ public class CubeGraphics2D extends PApplet {
 		}
 		
 		solve = cleanSolve(solve);
-					
+		
 		System.out.println(solve.toString());
 		System.out.println(solve.size());
 		System.out.println();
+		
+		return solve;
 	}
-	
+		
 	private static LinkedList<String> cleanSolve(LinkedList<String> solve) {
 		// Same as in CubeGraphics3D
 		

@@ -219,6 +219,7 @@ public class CubeIndexModel {
 				}
 			}
 		}
+		
 		Gson gson = new GsonBuilder().create();
 		String json = gson.toJson(distances);
 		FileWriter file = new FileWriter(filename);
