@@ -16,6 +16,8 @@ SHIFT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Makes all
 TAB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Makes all moves include their respective middle slice until pressed again  
 SPACEBAR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Calls solve function, starts walkthrough, then keep pressing to progress through the walkthrough  
 
+In Rubik's Cube notation, ' (e.g. R') after a letter denotes an anticlockwise move, while a lower case letter (e.g. r) represents the upper case letter equivalent move and also a movement of the respective middle slice.
+
 Click and drag mouse to change the 3D perspective
 
 ### 2D GUI:
