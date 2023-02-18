@@ -1,3 +1,5 @@
+// Lots of credit to Benjamin Botto, whose work I used extensively to implement this program:
+// https://medium.com/@benjamin.botto/implementing-an-optimal-rubiks-cube-solver-using-korf-s-algorithm-bf750b332cf9 
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
