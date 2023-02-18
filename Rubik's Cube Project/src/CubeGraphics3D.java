@@ -1,3 +1,5 @@
+// Lots of credit to Dan Shiffman, whose Youtube series formed the base of this program:
+// https://thecodingtrain.com/challenges/142-rubiks-cube
 
 import processing.core.*;
 import java.io.FileNotFoundException;
