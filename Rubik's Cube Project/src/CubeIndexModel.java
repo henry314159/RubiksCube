@@ -226,7 +226,7 @@ public class CubeIndexModel {
 		String json = gson.toJson(distances);
 		FileWriter file = new FileWriter(filename);
 		
-		// had to use buffered write to avoid write errors
+		// had to use buffered write to avoid write errors due to size of data
 		BufferedWriter buffer = new BufferedWriter(file);
 		buffer.write(json);
 		buffer.close();
@@ -332,6 +332,7 @@ public class CubeIndexModel {
 	}
 	
 	private final void updateCornerOrientation(byte index, byte amount) {
+		// Rotates corners
 		corners[index].setOrient((byte) (corners[index].getOrient() + amount));
 		
 		if (corners[index].getOrient() == 3) {
@@ -342,6 +343,7 @@ public class CubeIndexModel {
 	}
 	
 	private final void updateEdgeOrientation(byte index) {
+		// Rotates edges
 		edges[index].setOrient((byte) (edges[index].getOrient() ^ 1));
 	}
 	
