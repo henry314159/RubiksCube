@@ -1,4 +1,3 @@
-// make so tells u if u put it in wrong and no solve is found
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Arrays;
